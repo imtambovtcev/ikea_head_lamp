@@ -144,13 +144,59 @@ void handleMqttMessage(const String& topic, const String& msg) {
 
   // ---- Command: ANIMATION ----
   if (topic == "ikea_lamp/cmnd/animation") {
-    if (lower == "sunrise") {
-      anim.startSunrise();
+    // Parse animation command: "sunrise" or "sunrise:duration=1,brightness=80,color=0,100,255"
+    int colonIdx = msg.indexOf(':');
+    String animName = (colonIdx > 0) ? msg.substring(0, colonIdx) : msg;
+    animName.toLowerCase();
+    
+    if (animName == "sunrise") {
+      // Parse optional parameters
+      uint8_t duration = 0;  // 0 = use default
+      uint8_t brightness = 0;
+      uint8_t r = 0, g = 0, b = 0;
+      
+      if (colonIdx > 0) {
+        String params = msg.substring(colonIdx + 1);
+        
+        // Parse duration
+        int durIdx = params.indexOf("duration=");
+        if (durIdx >= 0) {
+          int durEnd = params.indexOf(',', durIdx);
+          if (durEnd < 0) durEnd = params.length();
+          duration = params.substring(durIdx + 9, durEnd).toInt();
+        }
+        
+        // Parse brightness
+        int briIdx = params.indexOf("brightness=");
+        if (briIdx >= 0) {
+          int briEnd = params.indexOf(',', briIdx);
+          if (briEnd < 0) briEnd = params.length();
+          brightness = params.substring(briIdx + 11, briEnd).toInt();
+        }
+        
+        // Parse color
+        int colIdx = params.indexOf("color=");
+        if (colIdx >= 0) {
+          int colStart = colIdx + 6;
+          int comma1 = params.indexOf(',', colStart);
+          int comma2 = params.indexOf(',', comma1 + 1);
+          int colEnd = params.indexOf(',', comma2 + 1);
+          if (colEnd < 0) colEnd = params.length();
+          
+          if (comma1 > colStart && comma2 > comma1) {
+            r = params.substring(colStart, comma1).toInt();
+            g = params.substring(comma1 + 1, comma2).toInt();
+            b = params.substring(comma2 + 1, colEnd).toInt();
+          }
+        }
+      }
+      
+      anim.startSunrise(duration, brightness, r, g, b);
       mqtt.publishState(state, true);
-    } else if (lower == "rainbow") {
+    } else if (animName == "rainbow") {
       anim.startRainbow();
       mqtt.publishState(state, true);
-    } else if (lower == "stop") {
+    } else if (animName == "stop") {
       anim.stop();
       mqtt.publishState(state, true);
     } else {
