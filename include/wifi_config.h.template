@@ -1,0 +1,7 @@
+// WiFi credentials template
+// Copy this file to wifi_config.h and fill in your credentials
+
+#pragma once
+
+#define WIFI_SSID     "YourNetworkName"
+#define WIFI_PASSWORD "YourPassword"

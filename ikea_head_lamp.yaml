@@ -1,0 +1,195 @@
+esphome:
+  name: ikea-head-lamp
+  friendly_name: IKEA Head Lamp
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+
+logger:
+
+wifi:
+  ssid: "ASUS_88"
+  password: "vano24810"
+
+api:
+
+ota:
+  platform: esphome
+
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+
+# ------------------- LIGHT OUTPUTS -------------------
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: out_red
+    frequency: 5000Hz
+
+  - platform: ledc
+    pin: GPIO4
+    id: out_green
+    frequency: 5000Hz
+
+  - platform: ledc
+    pin: GPIO3
+    id: out_blue
+    frequency: 5000Hz
+
+
+# ------------------- MAIN LIGHT -------------------
+light:
+  - platform: rgb
+    id: ikea_lamp
+    name: "IKEA Head Lamp"
+    red: out_red
+    green: out_green
+    blue: out_blue
+    default_transition_length: 700ms
+    restore_mode: ALWAYS_OFF
+
+
+# ------------------- GLOBALS -------------------
+globals:
+  - id: sunrise_running
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+  - id: sunrise_level
+    type: float
+    restore_value: no
+    initial_value: '0.2'
+
+
+# ------------------- SUNRISE CONFIG -------------------
+number:
+  - platform: template
+    id: sunrise_minutes
+    name: "Sunrise Duration Minutes"
+    optimistic: true
+    restore_value: true
+    min_value: 10
+    max_value: 60
+    step: 5
+    initial_value: 30
+
+
+# ------------------- DEBUG -------------------
+text_sensor:
+  - platform: template
+    id: last_event
+    name: "Lamp Last Button Event"
+    icon: mdi:gesture-tap
+
+sensor:
+  - platform: template
+    id: last_event_time
+    name: "Lamp Last Button Time"
+    device_class: timestamp
+
+
+# ------------------- BUTTON (NOW ONLY ON / OFF) -------------------
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO5
+      mode: INPUT_PULLUP
+      inverted: true
+    id: lamp_button
+    name: "Lamp Button (raw)"
+    filters:
+      - delayed_on: 15ms
+      - delayed_off: 15ms
+
+    on_press:
+      then:
+        - text_sensor.template.publish:
+            id: last_event
+            state: "Pressed"
+        - sensor.template.publish:
+            id: last_event_time
+            state: !lambda 'return id(esptime).now().timestamp;'
+
+        # --- TOGGLE LOGIC ---
+        - if:
+            condition:
+              light.is_on: ikea_lamp
+            then:
+              - light.turn_off: ikea_lamp
+            else:
+              - script.execute: turn_on_fixed_light
+
+
+# ------------------- SCRIPTS -------------------
+script:
+
+  # FIXED DEFAULT LIGHT (ALWAYS 20-100% RANGE SAFE)
+  - id: turn_on_fixed_light
+    mode: single
+    then:
+      - light.turn_on:
+          id: ikea_lamp
+          brightness: 70%
+          red: 100%
+          green: 80%
+          blue: 60%
+
+
+  # ---- SUNRISE ENGINE ----
+  - id: run_sunrise
+    mode: restart
+    then:
+      - lambda: |-
+          id(sunrise_running) = true;
+          id(sunrise_level) = 0.2f;      // START AT 20%
+          ESP_LOGI("sunrise", "Sunrise starting");
+
+      - light.turn_on:
+          id: ikea_lamp
+          brightness: 20%
+          red: 100%
+          green: 40%
+          blue: 10%
+
+      - while:
+          condition:
+            lambda: 'return id(sunrise_running);'
+          then:
+            - lambda: |-
+                id(sunrise_level) += 0.01f;
+                if (id(sunrise_level) >= 1.0f)
+                  id(sunrise_running) = false;
+
+            - light.turn_on:
+                id: ikea_lamp
+                brightness: !lambda 'return id(sunrise_level);'
+
+            # total time = minutes × 60,000 ms
+            # 0.01 step per delay → 80 steps from 20% to 100%
+            - delay: !lambda "return (id(sunrise_minutes).state * 60000) / 80;"
+
+
+  - id: stop_sunrise
+    mode: single
+    then:
+      - lambda: |-
+          id(sunrise_running) = false;
+          ESP_LOGI("sunrise", "Sunrise stopped");
+
+
+# ------------------- HA BUTTONS -------------------
+button:
+  - platform: template
+    name: "Start Sunrise"
+    on_press:
+      - script.execute: run_sunrise
+
+  - platform: template
+    name: "Stop Sunrise"
+    on_press:
+      - script.execute: stop_sunrise

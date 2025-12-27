@@ -1,0 +1,57 @@
+.pioenvs/ikea-head-lamp/src/esphome/core/color.cpp.o: \
+ src/esphome/core/color.cpp src/esphome/core/color.h \
+ src/esphome/core/component.h src/esphome/core/optional.h \
+ src/esphome/core/helpers.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/heap/include/esp_heap_caps.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/heap/include/multi_heap.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_err.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_compiler.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_attr.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/FreeRTOS.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/config/include/freertos/FreeRTOSConfig.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/config/riscv/include/freertos/FreeRTOSConfig_arch.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/projdefs.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/portable.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/deprecated_definitions.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/portable/riscv/include/freertos/portmacro.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/spinlock.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_cpu.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/soc_caps.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/riscv/rv_utils.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/assist_debug_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/soc.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_assert.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_bit_defs.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/reg_base.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/interrupt_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/interrupt_core0_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/riscv/csr.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/riscv/encoding.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/riscv/interrupt.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/esp_private/interrupt_intc.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/esp_private/interrupt_deprecated.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/riscv/include/riscv/csr_pie.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_intr_alloc.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_intr_types.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_macros.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_assert.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_rom/include/esp_rom_sys.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/reset_reasons.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_system/include/esp_system.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_idf_version.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/newlib/platform_include/esp_newlib.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_timer/include/esp_timer.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_etm.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/mpu_wrappers.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/esp_additions/include/freertos/idf_additions.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/task.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/list.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/queue.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/task.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/semphr.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/queue.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/stream_buffer.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/message_buffer.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/stream_buffer.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/event_groups.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/freertos/FreeRTOS-Kernel/include/freertos/timers.h

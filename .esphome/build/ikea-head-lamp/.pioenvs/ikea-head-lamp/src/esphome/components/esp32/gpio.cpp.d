@@ -1,0 +1,41 @@
+.pioenvs/ikea-head-lamp/src/esphome/components/esp32/gpio.cpp.o: \
+ src/esphome/components/esp32/gpio.cpp \
+ src/esphome/components/esp32/gpio.h src/esphome/core/hal.h \
+ src/esphome/core/gpio.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_attr.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_driver_gpio/include/driver/gpio.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_err.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_compiler.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_intr_alloc.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_intr_types.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/soc_caps.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/hal/include/hal/gpio_types.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/gpio_num.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_bit_defs.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_rom/include/esp_rom_gpio.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/gpio_pins.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_driver_gpio/include/driver/gpio_etm.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_hw_support/include/esp_etm.h \
+ src/esphome/core/log.h src/esphome/core/log_const_en.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/log/include/esp_log.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_rom/include/esp_rom_sys.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/reset_reasons.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/log/include/esp_log_internal.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32@src-702d0f93023d86e22d8ef62aa333f0b7/cores/esp32/esp32-hal-log.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_timer/include/esp_timer.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_rom/include/esp32c3/rom/ets_sys.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_driver_gpio/include/driver/rtc_io.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/hal/include/hal/rtc_io_types.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/hal/include/hal/gpio_hal.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/include/soc/gpio_periph.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/io_mux_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/soc.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/esp_common/include/esp_assert.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/reg_base.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/gpio_struct.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/gpio_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/gpio_sig_map.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/hal/esp32c3/include/hal/gpio_ll.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/rtc_cntl_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/soc/esp32c3/include/soc/usb_serial_jtag_reg.h \
+ /home/ivan/.platformio/packages/framework-arduinoespressif32-libs/esp32c3/include/hal/platform_port/include/hal/assert.h

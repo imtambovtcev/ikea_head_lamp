@@ -1,0 +1,9 @@
+// MQTT credentials template
+// Copy this file to mqtt_config.h and fill in your broker details
+
+#pragma once
+
+#define MQTT_HOST      "192.168.1.100"
+#define MQTT_PORT      1883
+#define MQTT_USER      ""
+#define MQTT_PASSWORD  ""
