@@ -34,8 +34,15 @@ public:
 
   /**
    * Start sunrise animation.
+   * 
+   * @param durationMinutes Duration in minutes (0 = use config default)
+   * @param targetBrightness Final brightness (0 = use config default)
+   * @param targetR Red component (0 = use config default)
+   * @param targetG Green component (0 = use config default)
+   * @param targetB Blue component (0 = use config default)
    */
-  void startSunrise();
+  void startSunrise(uint8_t durationMinutes = 0, uint8_t targetBrightness = 0,
+                    uint8_t targetR = 0, uint8_t targetG = 0, uint8_t targetB = 0);
 
   /**
    * Start rainbow animation.

@@ -14,6 +14,15 @@ void RainbowAnimation::start(DeviceState* state, DeviceConfig* config) {
   state->powerOn = true;
   state->brightness = config->defaultBrightness;
   state->progress = 0;
+  
+  // Rainbow animation parameters
+  state->animDurationMinutes = 0;  // Continuous
+  state->animFinalBrightness = 0;  // N/A
+  state->animFinalR = 0;
+  state->animFinalG = 0;
+  state->animFinalB = 0;
+  state->animEndBehavior = "loop";  // Rainbow loops forever
+  state->bumpVersion();  // Trigger MQTT publish
 }
 
 void RainbowAnimation::stop(DeviceState* state) {

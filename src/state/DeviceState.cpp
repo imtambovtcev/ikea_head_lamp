@@ -28,6 +28,12 @@ void DeviceState::setStaticMode() {
   animationName = "";
   animationPaused = false;
   progress = 0;
+  animDurationMinutes = 0;
+  animFinalBrightness = 0;
+  animFinalR = 0;
+  animFinalG = 0;
+  animFinalB = 0;
+  animEndBehavior = "static";
   bumpVersion();
 }
 

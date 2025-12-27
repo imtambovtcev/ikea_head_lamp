@@ -47,8 +47,8 @@ void WiFiManager::setStatusLED(StatusLED* led) {
 void WiFiManager::connect() {
   Serial.printf("[WIFI] Connecting to %s\n", WIFI_SSID);
   
-  // Configure WiFi for stability over performance
-  WiFi.setSleep(false);  // Disable sleep to prevent connection drops
+  // Enable light sleep for power savings while maintaining connectivity
+  WiFi.setSleep(WIFI_PS_MIN_MODEM);  // Light sleep between DTIM beacons
   WiFi.setAutoReconnect(true);
   
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);

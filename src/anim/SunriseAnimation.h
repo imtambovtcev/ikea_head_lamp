@@ -21,9 +21,17 @@ public:
    * Start the sunrise animation.
    * 
    * @param state Device state to update
-   * @param config Device config (for duration and target brightness)
+   * @param durationMinutes Duration in minutes (overrides config if provided)
+   * @param targetBrightness Final brightness 1-100 (overrides config if provided)
+   * @param targetR Target red color (overrides config if provided)
+   * @param targetG Target green color (overrides config if provided)
+   * @param targetB Target blue color (overrides config if provided)
+   * @param config Device config (used for defaults if parameters not provided)
    */
-  void start(DeviceState* state, DeviceConfig* config);
+  void start(DeviceState* state, DeviceConfig* config, 
+             uint8_t durationMinutes = 0, 
+             uint8_t targetBrightness = 0,
+             uint8_t targetR = 0, uint8_t targetG = 0, uint8_t targetB = 0);
 
   /**
    * Stop the animation.
@@ -64,6 +72,10 @@ private:
   bool paused;
   unsigned long startMillis;
   unsigned long pausedOffset;  // Elapsed time when paused
+  unsigned long lastUpdateTime;
+  unsigned long durationMs;  // Total duration captured at start
+  uint8_t targetBrightness;  // Final brightness captured at start
+  uint8_t targetR, targetG, targetB;  // Final color captured at start
 };
 
 #endif // SUNRISE_ANIMATION_H

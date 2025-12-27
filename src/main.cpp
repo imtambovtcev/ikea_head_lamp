@@ -332,20 +332,14 @@ void setup() {
              state.colorR, state.colorG, state.colorB,
              config.minPwmPercent, config.maxPwmPercent);
 
-  // Publish initial state and config
-  mqtt.publishConfig(config);
-  mqtt.publishState(state, true);
-  mqtt.publishDiagnostics(sysmon.getUptimeSeconds(), sysmon.getFreeHeap(),
-                          sysmon.getMinFreeHeap(), sysmon.getResetReason(),
-                          sysmon.getLoopCount());
-
+  // Initial MQTT publishes will happen in loop() once connected
+  
   Serial.println("[MAIN] Setup complete");
 }
 
-// ======================= LOOP ===============================
+// ======================= MAIN LOOP ===============
 
 void loop() {
-  // Feed the watchdog
   esp_task_wdt_reset();
 
   // Update system monitor
@@ -355,6 +349,14 @@ void loop() {
   // Maintain network connections
   wifi.loop();
   mqtt.loop();
+  
+  // Publish initial state/config once after first MQTT connection
+  static bool initialPublishDone = false;
+  if (!initialPublishDone && mqtt.connected()) {
+    mqtt.publishConfig(config);
+    mqtt.publishState(state, true);
+    initialPublishDone = true;
+  }
 
   // Handle button input
   ButtonEvent btnEvent = button.update();
@@ -383,6 +385,15 @@ void loop() {
     
     // Start rainbow animation
     anim.startRainbow();
+    
+    mqtt.publishState(state, true);
+  }
+  
+  if (btnEvent == ButtonEvent::DoublePress) {
+    statusLED.blink(3, 50);  // Triple blink on double-press
+    
+    // Start fast 2-minute sunrise for testing
+    anim.startSunrise(2);  // 2 minutes, use config defaults for brightness/color
     
     mqtt.publishState(state, true);
   }
@@ -441,7 +452,7 @@ void loop() {
                             sysmon.getMinFreeHeap(), sysmon.getResetReason(),
                             sysmon.getLoopCount());
   }
-
-  // Yield removed - was limiting loop to 1000 loops/sec max
-  // Watchdog reset is sufficient to prevent task starvation
+  
+  // Small delay to reduce CPU load and heat (allows WiFi to use light sleep)
+  delay(1);  // 1ms delay = ~1000 loops/sec max (still plenty responsive)
 }

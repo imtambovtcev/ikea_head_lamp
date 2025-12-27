@@ -22,13 +22,14 @@ void AnimationEngine::loop() {
   }
 }
 
-void AnimationEngine::startSunrise() {
+void AnimationEngine::startSunrise(uint8_t durationMinutes, uint8_t targetBrightness,
+                                   uint8_t targetR, uint8_t targetG, uint8_t targetB) {
   if (!state || !config) return;
   
   // Stop any active animation first
   stop();
   
-  sunrise.start(state, config);
+  sunrise.start(state, config, durationMinutes, targetBrightness, targetR, targetG, targetB);
 }
 
 void AnimationEngine::startRainbow() {

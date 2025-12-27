@@ -13,7 +13,8 @@
 enum class ButtonEvent {
   None,
   Press,
-  LongPress
+  LongPress,
+  DoublePress
 };
 
 class Button {
@@ -36,12 +37,15 @@ public:
 private:
   static const uint8_t PIN_BUTTON = 5;
   static const unsigned long DEBOUNCE_MS = 40;
+  static const unsigned long DOUBLE_CLICK_MS = 400;  // Max time between clicks
 
   bool lastStable;
   bool lastRaw;
   unsigned long lastChange;
   unsigned long pressStartTime;
   bool longPressReported;
+  unsigned long lastReleaseTime;
+  bool awaitingSecondClick;
 };
 
 #endif // BUTTON_H

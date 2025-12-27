@@ -44,8 +44,7 @@ void MqttManager::begin(MessageCallback callback) {
   Serial.println("[MQTT] Initializing MQTT manager");
   messageCallback = callback;
   
-  // Keep default buffer size (256) to save heap
-  // client.setBufferSize(512);
+  // Keep default buffer size (256 bytes)
   
   // Reduce keepalive to detect connection issues faster
   client.setKeepAlive(15);
@@ -56,7 +55,8 @@ void MqttManager::begin(MessageCallback callback) {
   client.setServer(MQTT_HOST, MQTT_PORT);
   client.setCallback(mqttCallbackWrapper);
   
-  connectMqtt();
+  // Don't connect immediately - wait for WiFi to be ready
+  // Connection will be attempted in loop()
 }
 
 void MqttManager::loop() {
@@ -70,7 +70,7 @@ void MqttManager::loop() {
     // Throttle client.loop() to reduce WiFi overhead
     static unsigned long lastClientLoop = 0;
     unsigned long now = millis();
-    if ((now - lastClientLoop) >= 10) {  // Call max 100 times/sec
+    if ((now - lastClientLoop) >= 20) {  // Call max 50 times/sec
       client.loop();
       lastClientLoop = now;
     }
@@ -87,6 +87,11 @@ void MqttManager::setStatusLED(StatusLED* led) {
 
 bool MqttManager::connectMqtt() {
   if (client.connected()) return true;
+  
+  // Don't attempt connection if WiFi isn't ready
+  if (WiFi.status() != WL_CONNECTED) {
+    return false;
+  }
 
   if (statusLED) statusLED->mqttConnecting();
   Serial.printf("[MQTT] Connecting to %s:%u\n", MQTT_HOST, MQTT_PORT);
@@ -135,31 +140,48 @@ void MqttManager::subscribeToTopics() {
 void MqttManager::publishState(const DeviceState& state, bool retain) {
   if (!client.connected()) return;
 
-  char buf[320];
-  const char* modeStr = (state.mode == LampMode::STATIC) ? "static" : "animation";
+  char buf[256];
+  
+  // Build compact message - include animation params only if animation active
+  if (state.mode == LampMode::ANIMATION && state.animationName.length() > 0) {
+    snprintf(buf, sizeof(buf),
+             "{\"pwr\":%d,\"bri\":%u,\"rgb\":[%u,%u,%u],"
+             "\"anim\":\"%s\",\"pause\":%d,\"prog\":%u,"
+             "\"dur\":%u,\"final_bri\":%u,\"final_rgb\":[%u,%u,%u],\"end\":\"%s\","
+             "\"ver\":%lu}",
+             state.powerOn ? 1 : 0,
+             state.brightness,
+             state.colorR, state.colorG, state.colorB,
+             state.animationName.c_str(),
+             state.animationPaused ? 1 : 0,
+             state.progress,
+             state.animDurationMinutes,
+             state.animFinalBrightness,
+             state.animFinalR, state.animFinalG, state.animFinalB,
+             state.animEndBehavior.c_str(),
+             (unsigned long)state.version);
+  } else {
+    // Static mode - show empty animation to indicate no animation running
+    snprintf(buf, sizeof(buf),
+             "{\"pwr\":%d,\"bri\":%u,\"rgb\":[%u,%u,%u],\"anim\":\"\",\"ver\":%lu}",
+             state.powerOn ? 1 : 0,
+             state.brightness,
+             state.colorR, state.colorG, state.colorB,
+             (unsigned long)state.version);
+  }
 
-  snprintf(buf, sizeof(buf),
-           "{\"power\":\"%s\","
-           "\"mode\":\"%s\","
-           "\"animation\":\"%s\","
-           "\"paused\":%s,"
-           "\"progress\":%u,"
-           "\"brightness\":%u,"
-           "\"color\":[%u,%u,%u],"
-           "\"session\":%lu,"
-           "\"version\":%lu}",
-           state.powerOn ? "on" : "off",
-           modeStr,
-           state.animationName.c_str(),
-           state.animationPaused ? "true" : "false",
-           state.progress,
-           state.brightness,
-           state.colorR, state.colorG, state.colorB,
-           (unsigned long)state.sessionId,
-           (unsigned long)state.version);
-
-  client.publish(TOPIC_STATE_JSON, buf, retain);
-  // Serial output removed - was blocking loop and causing watchdog timeouts
+  // Log state publishes to help debug
+  Serial.print("[MQTT] Publishing to ");
+  Serial.print(TOPIC_STATE_JSON);
+  Serial.print(": ");
+  Serial.println(buf);
+  
+  bool success = client.publish(TOPIC_STATE_JSON, buf, retain);
+  if (!success) {
+    Serial.println("[MQTT] ERROR: Failed to publish state!");
+  } else {
+    Serial.println("[MQTT] State published successfully");
+  }
 }
 
 void MqttManager::publishConfig(const DeviceConfig& config) {

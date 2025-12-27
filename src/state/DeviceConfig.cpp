@@ -5,8 +5,8 @@ const char* DeviceConfig::NVS_NAMESPACE = "ikea_lamp";
 DeviceConfig::DeviceConfig() 
   : defaultBrightness(70),
     defaultColorR(255),
-    defaultColorG(200),
-    defaultColorB(160),
+    defaultColorG(147),
+    defaultColorB(41),
     sunriseMinutes(30),
     sunriseFinalBrightness(100),
     minPwmPercent(20),

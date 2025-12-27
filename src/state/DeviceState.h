@@ -25,6 +25,14 @@ public:
   bool     animationPaused;
   String   animationName;
   uint8_t  progress;        // 0-100 for animation progress
+  
+  // Animation parameters
+  uint8_t  animDurationMinutes;   // Animation duration (0 = N/A)
+  uint8_t  animFinalBrightness;   // Final brightness (0 = N/A)
+  uint8_t  animFinalR;            // Final color (0 = N/A if all RGB are 0)
+  uint8_t  animFinalG;
+  uint8_t  animFinalB;
+  String   animEndBehavior;       // What happens after: "static", "loop", "off"
 
   uint32_t sessionId;       // Unique per boot
   uint32_t version;         // Increments on each state change
