@@ -65,6 +65,13 @@ void AnimationEngine::setPaused(bool paused) {
   }
 }
 
+void AnimationEngine::togglePause() {
+  if (!state) return;
+  
+  // Toggle the pause state
+  setPaused(!state->animationPaused);
+}
+
 bool AnimationEngine::isActive() const {
   return sunrise.isActive() || rainbow.isActive();
 }

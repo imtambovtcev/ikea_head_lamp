@@ -451,9 +451,12 @@ void loop() {
   if (btnEvent == ButtonEvent::Press) {
     statusLED.blink(1, 50);  // Quick blink on button press
     
+    // Single click: Toggle power (turn on to static default color OR turn off)
     state.togglePower();
     
-    if (state.powerOn && state.brightness == 0) {
+    if (state.powerOn) {
+      // Turn on: Set to static mode with default settings
+      anim.stop();
       state.brightness = config.defaultBrightness;
       state.colorR = config.defaultColorR;
       state.colorG = config.defaultColorG;
@@ -470,8 +473,8 @@ void loop() {
   if (btnEvent == ButtonEvent::LongPress) {
     statusLED.blink(2, 50);  // Double blink on long press
     
-    // Start rainbow animation
-    anim.startRainbow();
+    // Long press: Toggle pause/play current animation
+    anim.togglePause();
     
     mqtt.publishState(state, true);
   }
@@ -479,8 +482,8 @@ void loop() {
   if (btnEvent == ButtonEvent::DoublePress) {
     statusLED.blink(3, 50);  // Triple blink on double-press
     
-    // Start fast 2-minute sunrise for testing
-    anim.startSunrise(2);  // 2 minutes, use config defaults for brightness/color
+    // Double click: Start rainbow animation
+    anim.startRainbow();
     
     mqtt.publishState(state, true);
   }

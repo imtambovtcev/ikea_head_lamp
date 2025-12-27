@@ -62,6 +62,11 @@ public:
   void setPaused(bool paused);
 
   /**
+   * Toggle pause state of active animation.
+   */
+  void togglePause();
+
+  /**
    * Check if any animation is active.
    */
   bool isActive() const;
