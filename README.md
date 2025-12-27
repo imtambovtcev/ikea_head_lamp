@@ -2,31 +2,51 @@
 
 Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smooth animations, and persistent configuration.
 
+## 📚 Documentation
+
+- **[Hardware Modification Guide](docs/HARDWARE_MOD.md)** - Complete guide for replacing the WDP80 chip with ESP32-C3
+- **[Board Images](docs/)** - Reference images for PCB contacts and soldering
+
 ## ✨ Features
 
-- 🎨 **Full RGB Control** - 16.7 million colors via PWM
-- 📡 **MQTT Integration** - Control via Home Assistant, Node-RED, or any MQTT client
-- 🌅 **6 Animations** - Sunrise, Sunset, Rainbow, Fire, Breathe, Ocean
-- 💾 **Persistent Storage** - Settings saved to NVS flash memory
-- 🔘 **Physical Button** - Single click (power), long press (pause/play), double-click (rainbow)
-- 🔧 **Configurable PWM** - Calibrate brightness range for your LED hardware
-- 🏗️ **Modular Architecture** - Clean, maintainable, extensible code
+### Core Functionality
+- 🎨 **Full RGB Control** - 16.7 million colors via 13-bit PWM with gamma correction (2.2)
+- 📡 **MQTT Integration** - Complete control via Home Assistant, Node-RED, or any MQTT client
+- 🌅 **6 Animations** - Sunrise, Sunset, Rainbow, Fire, Breathe, Ocean with customizable parameters
+- 💾 **Persistent Configuration** - All settings saved to NVS flash memory, survive reboots
+- 🔘 **Physical Button Control** - Single click (power toggle), long press (pause/play), double-click (favorite animation)
+- ⭐ **Favorite Animation** - Save your preferred animation with custom parameters for instant access
+- 🔧 **Hardware Calibration** - Configurable PWM range (20-100%) to match your LED characteristics
+
+### Advanced Features
+- 🎯 **Animation Parameters** - Fine-tune duration, brightness, speed, colors for each animation
+- ⏸️ **Pause/Resume** - Pause any running animation and resume from the same state
+- 📊 **Real-time Monitoring** - MQTT state updates, heartbeat, diagnostics (heap, WiFi RSSI, loop rate)
+- 🏗️ **Modular Architecture** - Clean, maintainable, extensible codebase with hardware abstraction
+- ✅ **Comprehensive Testing** - Python-based MQTT test suite with 50+ automated tests
+- 🔒 **Safe Design** - Watchdog timer, WiFi reconnection, MQTT auto-reconnect, bounded animations
 
 ## 🛠️ Hardware Requirements
 
-- **ESP32-C3-DevKitM-1** (or compatible ESP32-C3 board)
-- **RGB LED** (from IKEA lamp or similar)
-- **Push button** (connected to GPIO5)
-- **Resistors** for LED current limiting (if needed)
+- **ESP32-C3 Super Mini** (tested) or **ESP32-C3-DevKitM-1** (compatible ESP32-C3 board)
+- **RGB LED** (from IKEA lamp)
+- **Push button** (connected to GPIO5 via 2kΩ resistor)
+- **24V to 5V DC-DC converter** (buck converter)
+- **2kΩ resistors** × 4 (mandatory for safety)
+- **Optional:** 470µF capacitor (power stability), 200nF capacitor (button debouncing)
+
+> **📖 See [Hardware Modification Guide](docs/HARDWARE_MOD.md) for complete modification instructions with images**
 
 ### Pin Configuration
 
-| Component | GPIO Pin |
-|-----------|----------|
-| Red LED   | 1        |
-| Green LED | 4        |
-| Blue LED  | 3        |
-| Button    | 5 (with internal pull-up) |
+| Component | ESP32 GPIO |
+|-----------|------------|
+| Red LED   | 1 (via 2kΩ resistor) |
+| Green LED | 4 (via 2kΩ resistor) |
+| Blue LED  | 3 (via 2kΩ resistor) |
+| Button    | 5 (via 2kΩ resistor, internal pull-up enabled) |
+
+> **⚠️ Important:** All GPIO connections must use 2kΩ resistors for safety!
 
 ### Button Controls
 
@@ -34,7 +54,7 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 |--------|----------|
 | **Single Click** | Toggle power (turn on to default color OR turn off) |
 | **Long Press** | Pause/play current animation |
-| **Double Click** | Start favorite animation (default: fire) |
+| **Double Click** | Start favorite animation (configurable via MQTT) |
 
 ## 📦 Installation
 
@@ -75,6 +95,53 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
    pio device monitor
    ```
 
+## 🧪 Testing
+
+The project includes a comprehensive Python-based MQTT test suite with 50+ automated tests covering all features.
+
+### Prerequisites
+
+```bash
+cd test
+pip install -r requirements.txt
+```
+
+### Configuration
+
+Copy the example config and edit with your broker details:
+```bash
+cp mqtt_test_config.py.example mqtt_test_config.py
+# Edit mqtt_test_config.py with your MQTT broker IP and device topic
+```
+
+### Running Tests
+
+```bash
+# Run all automated tests
+python3 run_all_tests.py
+
+# Run individual test suites
+python3 test_basic_commands.py      # Power, brightness, color
+python3 test_configuration.py       # Config management, NVS persistence
+python3 test_animations.py          # All 6 animations with parameters
+python3 test_pause_play.py          # Animation pause/resume
+python3 test_favorite_animation.py  # Favorite animation feature
+python3 test_button_controls.py     # Manual button testing (interactive)
+```
+
+### Test Coverage
+
+The test suite validates:
+- ✅ Basic commands (power, brightness, color, defaults)
+- ✅ Configuration management (CRUD operations, NVS persistence)
+- ✅ All animations with various parameter combinations
+- ✅ Animation pause/play functionality
+- ✅ Favorite animation configuration and triggering
+- ✅ Button controls (requires manual interaction)
+- ✅ State synchronization and MQTT message validation
+
+See [test/README](test/README) for detailed test documentation.
+
 ## 🎮 MQTT Control
 
 ### Command Topics
@@ -85,7 +152,7 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 | `ikea_head_lamp/cmnd/brightness` | `0-100` | Set brightness (0-100%) |
 | `ikea_head_lamp/cmnd/color` | `R,G,B` | Set color (e.g., `255,200,100`) |
 | `ikea_head_lamp/cmnd/mode` | `static`, `animation` | Set operating mode |
-| `ikea_head_lamp/cmnd/animation` | `sunrise`, `sunset`, `rainbow`, `fire`, `breathe`, `ocean`, `stop` | Start/stop animation (see examples below) |
+| `ikea_head_lamp/cmnd/animation` | `sunrise`, `sunset`, `rainbow`, `fire`, `breathe`, `ocean`, `favorite`, `stop` | Start/stop animation (see examples below) |
 | `ikea_head_lamp/cmnd/pause` | `true`, `false`, `toggle` | Pause/resume animation |
 | `ikea_head_lamp/cmnd/query` | any | Request immediate state publish |
 | `ikea_head_lamp/cmnd/test` | `color`, `rgb` | Run RGB color test (R→G→B cycle) |
@@ -125,11 +192,16 @@ mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set"
 # Set favorite to just rainbow (no parameters)
 mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "rainbow"
 
+# Trigger the favorite animation via MQTT
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "favorite"
+
 # Save the configuration to flash (persists after reboot)
 mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/save" -m "1"
 ```
 
-The default favorite animation is **fire** with intensity=70, speed=5.
+The default favorite animation is **fire** with intensity=70, speed=5. This can be customized to any animation with your preferred parameters and will be triggered by:
+- Double-clicking the physical button
+- Sending `favorite` to the animation command topic
 
 ### State Topics
 
@@ -308,8 +380,6 @@ The firmware uses a clean modular architecture:
 - ✅ Simple to add new features
 - ✅ Hardware-agnostic animation logic
 
-See [REFACTORING.md](REFACTORING.md) for detailed architecture documentation.
-
 ## 🔧 Customization
 
 ### Adjusting Brightness Mapping
@@ -400,16 +470,26 @@ pio device monitor -b 115200
 
 ```
 ikea_head_lamp/
+├── docs/              Documentation and hardware images
+│   ├── HARDWARE_MOD.md  Hardware modification guide
+│   ├── front.png        PCB front (unmodified)
+│   ├── back.png         PCB back (unmodified)
+│   ├── front_s.png      PCB front (wired)
+│   └── back_s.png       PCB back (wired)
 ├── include/           Configuration headers (WiFi, MQTT)
 ├── lib/               External libraries
 ├── src/               Source code
-│   ├── hw/           Hardware layer
-│   ├── state/        State management
-│   ├── net/          Network layer
-│   ├── anim/         Animation system
-│   └── main.cpp      Main application
-├── platformio.ini     Build configuration
-└── README.md         This file
+│   ├── hw/           Hardware abstraction layer
+│   ├── state/        State management & configuration
+│   ├── net/          Network layer (WiFi, MQTT)
+│   ├── anim/         Animation system (6 animations)
+│   └── main.cpp      Main application loop
+├── test/              Python MQTT test suite
+│   ├── mqtt_test_utils.py    Test framework
+│   ├── run_all_tests.py      Master test runner
+│   └── test_*.py             Individual test suites
+├── platformio.ini     PlatformIO build configuration
+└── README.md          This file
 ```
 
 ## 📝 License
@@ -429,10 +509,3 @@ This project is provided as-is for personal and educational use.
 - [ESP32-C3 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf)
 - [MQTT Protocol](https://mqtt.org/)
 - [Home Assistant MQTT Integration](https://www.home-assistant.io/integrations/mqtt/)
-
----
-
-**Built with ❤️ using clean architecture principles**
-
-For detailed architecture information, see [REFACTORING.md](REFACTORING.md)  
-For quick API reference, see [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
