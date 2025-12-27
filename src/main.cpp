@@ -234,8 +234,142 @@ void handleMqttMessage(const String& topic, const String& msg) {
       
       anim.startSunrise(duration, brightness, r, g, b);
       mqtt.publishState(state, true);
+    } else if (animName == "sunset") {
+      // Parse optional parameters
+      uint8_t duration = 0;  // 0 = use default
+      uint8_t finalBrightness = 0;  // 0 = turn off
+      
+      if (colonIdx > 0) {
+        String params = msg.substring(colonIdx + 1);
+        
+        // Parse duration
+        int durIdx = params.indexOf("duration=");
+        if (durIdx >= 0) {
+          int durEnd = params.indexOf(',', durIdx);
+          if (durEnd < 0) durEnd = params.length();
+          duration = params.substring(durIdx + 9, durEnd).toInt();
+        }
+        
+        // Parse final brightness
+        int briIdx = params.indexOf("brightness=");
+        if (briIdx >= 0) {
+          int briEnd = params.indexOf(',', briIdx);
+          if (briEnd < 0) briEnd = params.length();
+          finalBrightness = params.substring(briIdx + 11, briEnd).toInt();
+        }
+      }
+      
+      anim.startSunset(duration, finalBrightness);
+      mqtt.publishState(state, true);
     } else if (animName == "rainbow") {
       anim.startRainbow();
+      mqtt.publishState(state, true);
+    } else if (animName == "fire") {
+      // Parse optional parameters
+      uint8_t intensity = 70;
+      uint8_t speed = 5;
+      
+      if (colonIdx > 0) {
+        String params = msg.substring(colonIdx + 1);
+        
+        // Parse intensity
+        int intIdx = params.indexOf("intensity=");
+        if (intIdx >= 0) {
+          int intEnd = params.indexOf(',', intIdx);
+          if (intEnd < 0) intEnd = params.length();
+          intensity = params.substring(intIdx + 10, intEnd).toInt();
+        }
+        
+        // Parse speed
+        int spdIdx = params.indexOf("speed=");
+        if (spdIdx >= 0) {
+          int spdEnd = params.indexOf(',', spdIdx);
+          if (spdEnd < 0) spdEnd = params.length();
+          speed = params.substring(spdIdx + 6, spdEnd).toInt();
+        }
+      }
+      
+      anim.startFire(intensity, speed);
+      mqtt.publishState(state, true);
+    } else if (animName == "breathe") {
+      // Parse optional parameters
+      uint8_t cycleDuration = 4;
+      uint8_t maxBrightness = 70;
+      uint8_t minBrightness = 10;
+      uint8_t r = 0, g = 0, b = 0;
+      
+      if (colonIdx > 0) {
+        String params = msg.substring(colonIdx + 1);
+        
+        // Parse duration (cycle duration in seconds)
+        int durIdx = params.indexOf("duration=");
+        if (durIdx >= 0) {
+          int durEnd = params.indexOf(',', durIdx);
+          if (durEnd < 0) durEnd = params.length();
+          cycleDuration = params.substring(durIdx + 9, durEnd).toInt();
+        }
+        
+        // Parse max brightness
+        int briIdx = params.indexOf("brightness=");
+        if (briIdx >= 0) {
+          int briEnd = params.indexOf(',', briIdx);
+          if (briEnd < 0) briEnd = params.length();
+          maxBrightness = params.substring(briIdx + 11, briEnd).toInt();
+        }
+        
+        // Parse min brightness
+        int minIdx = params.indexOf("min_brightness=");
+        if (minIdx >= 0) {
+          int minEnd = params.indexOf(',', minIdx);
+          if (minEnd < 0) minEnd = params.length();
+          minBrightness = params.substring(minIdx + 15, minEnd).toInt();
+        }
+        
+        // Parse color
+        int colIdx = params.indexOf("color=");
+        if (colIdx >= 0) {
+          int colStart = colIdx + 6;
+          int comma1 = params.indexOf(',', colStart);
+          int comma2 = params.indexOf(',', comma1 + 1);
+          int colEnd = params.indexOf(',', comma2 + 1);
+          if (colEnd < 0) colEnd = params.length();
+          
+          if (comma1 > colStart && comma2 > comma1) {
+            r = params.substring(colStart, comma1).toInt();
+            g = params.substring(comma1 + 1, comma2).toInt();
+            b = params.substring(comma2 + 1, colEnd).toInt();
+          }
+        }
+      }
+      
+      anim.startBreathe(cycleDuration, maxBrightness, minBrightness, r, g, b);
+      mqtt.publishState(state, true);
+    } else if (animName == "ocean") {
+      // Parse optional parameters
+      uint8_t speed = 5;
+      uint8_t brightness = 70;
+      
+      if (colonIdx > 0) {
+        String params = msg.substring(colonIdx + 1);
+        
+        // Parse speed
+        int spdIdx = params.indexOf("speed=");
+        if (spdIdx >= 0) {
+          int spdEnd = params.indexOf(',', spdIdx);
+          if (spdEnd < 0) spdEnd = params.length();
+          speed = params.substring(spdIdx + 6, spdEnd).toInt();
+        }
+        
+        // Parse brightness
+        int briIdx = params.indexOf("brightness=");
+        if (briIdx >= 0) {
+          int briEnd = params.indexOf(',', briIdx);
+          if (briEnd < 0) briEnd = params.length();
+          brightness = params.substring(briIdx + 11, briEnd).toInt();
+        }
+      }
+      
+      anim.startOcean(speed, brightness);
       mqtt.publishState(state, true);
     } else if (animName == "stop") {
       anim.stop();
