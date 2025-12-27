@@ -1,6 +1,6 @@
-# IKEA Head Lamp - Hardware Modification Guide
+# IKEA ISKÄRNA Head Lamp - Hardware Modification Guide
 
-This guide describes how to replace the original WDP80 chip in an IKEA head lamp with an ESP32-C3 microcontroller to add smart features and MQTT control.
+This guide describes how to replace the original WDP80 chip in an IKEA ISKÄRNA head lamp with an ESP32-C3 microcontroller to add smart features and MQTT control.
 
 ## ⚠️ Safety Warning
 

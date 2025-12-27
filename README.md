@@ -1,6 +1,6 @@
-# IKEA Head Lamp - Smart MQTT Firmware
+# IKEA ISKÄRNA Head Lamp - Smart MQTT Firmware
 
-Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smooth animations, and persistent configuration.
+Transform your IKEA ISKÄRNA head lamp into a smart RGB LED light with MQTT control, smooth animations, and persistent configuration.
 
 ## 📚 Documentation
 
