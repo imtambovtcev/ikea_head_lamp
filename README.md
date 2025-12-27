@@ -73,68 +73,68 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 
 | Topic | Payload | Description |
 |-------|---------|-------------|
-| `ikea_lamp/cmnd/power` | `on`, `off`, `toggle` | Control lamp power |
-| `ikea_lamp/cmnd/brightness` | `0-100` | Set brightness (0-100%) |
-| `ikea_lamp/cmnd/color` | `R,G,B` | Set color (e.g., `255,200,100`) |
-| `ikea_lamp/cmnd/mode` | `static`, `animation` | Set operating mode |
-| `ikea_lamp/cmnd/animation` | `sunrise`, `rainbow`, `stop` | Start/stop animation (see examples below) |
-| `ikea_lamp/cmnd/pause` | `true`, `false`, `toggle` | Pause/resume animation |
-| `ikea_lamp/cmnd/query` | any | Request immediate state publish |
-| `ikea_lamp/cmnd/test` | `color`, `rgb` | Run RGB color test (R→G→B cycle) |
-| `ikea_lamp/cmnd/apply_defaults` | any | Apply default settings |
+| `ikea_head_lamp/cmnd/power` | `on`, `off`, `toggle` | Control lamp power |
+| `ikea_head_lamp/cmnd/brightness` | `0-100` | Set brightness (0-100%) |
+| `ikea_head_lamp/cmnd/color` | `R,G,B` | Set color (e.g., `255,200,100`) |
+| `ikea_head_lamp/cmnd/mode` | `static`, `animation` | Set operating mode |
+| `ikea_head_lamp/cmnd/animation` | `sunrise`, `rainbow`, `stop` | Start/stop animation (see examples below) |
+| `ikea_head_lamp/cmnd/pause` | `true`, `false`, `toggle` | Pause/resume animation |
+| `ikea_head_lamp/cmnd/query` | any | Request immediate state publish |
+| `ikea_head_lamp/cmnd/test` | `color`, `rgb` | Run RGB color test (R→G→B cycle) |
+| `ikea_head_lamp/cmnd/apply_defaults` | any | Apply default settings |
 
 ### Configuration Topics
 
 | Topic | Payload | Description |
 |-------|---------|-------------|
-| `ikea_lamp/config/default_brightness/set` | `0-100` | Default brightness |
-| `ikea_lamp/config/default_color/set` | `R,G,B` | Default color |
-| `ikea_lamp/config/sunrise_minutes/set` | `5-180` | Sunrise duration (minutes) |
-| `ikea_lamp/config/min_pwm/set` | `0-100` | Min PWM duty cycle (%) |
-| `ikea_lamp/config/max_pwm/set` | `0-100` | Max PWM duty cycle (%) |
-| `ikea_lamp/config/save` | any | Save config to flash |
-| `ikea_lamp/config/reset` | any | Reset to defaults |
-| `ikea_lamp/config/request` | any | Request current config |
+| `ikea_head_lamp/config/default_brightness/set` | `0-100` | Default brightness |
+| `ikea_head_lamp/config/default_color/set` | `R,G,B` | Default color |
+| `ikea_head_lamp/config/sunrise_minutes/set` | `5-180` | Sunrise duration (minutes) |
+| `ikea_head_lamp/config/min_pwm/set` | `0-100` | Min PWM duty cycle (%) |
+| `ikea_head_lamp/config/max_pwm/set` | `0-100` | Max PWM duty cycle (%) |
+| `ikea_head_lamp/config/save` | any | Save config to flash |
+| `ikea_head_lamp/config/reset` | any | Reset to defaults |
+| `ikea_head_lamp/config/request` | any | Request current config |
 
 ### State Topics
 
 | Topic | Description |
 |-------|-------------|
-| `ikea_lamp/state/json` | Current state (JSON: power, brightness, color, animation, progress) |
-| `ikea_lamp/config/state` | Current configuration (JSON) |
-| `ikea_lamp/heartbeat` | Uptime in seconds (published every 10s) |
-| `ikea_lamp/diagnostics` | System diagnostics (heap, WiFi RSSI, loop rate) |
+| `ikea_head_lamp/state/json` | Current state (JSON: power, brightness, color, animation, progress) |
+| `ikea_head_lamp/config/state` | Current configuration (JSON) |
+| `ikea_head_lamp/heartbeat` | Uptime in seconds (published every 10s) |
+| `ikea_head_lamp/diagnostics` | System diagnostics (heap, WiFi RSSI, loop rate) |
 
 ### Example Commands
 
 ```bash
 # Turn on the lamp
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/power" -m "on"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/power" -m "on"
 
 # Set to warm white at 70% brightness
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/color" -m "255,147,41"
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/brightness" -m "70"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/color" -m "255,147,41"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/brightness" -m "70"
 
 # Simple sunrise (use config defaults: 30 min, warm white)
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "sunrise"
 
 # 1-minute blue sunrise
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=1,color=0,100,255"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "sunrise:duration=1,color=0,100,255"
 
 # 5-minute dim sunrise to 50% brightness
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=5,brightness=50"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "sunrise:duration=5,brightness=50"
 
 # 10-minute warm orange sunrise
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=10,brightness=80,color=255,100,0"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "sunrise:duration=10,brightness=80,color=255,100,0"
 
 # Start rainbow animation
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "rainbow"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/animation" -m "rainbow"
 
 # Run RGB color test
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/test" -m "color"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/test" -m "color"
 
 # Query current state
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/query" -m "1"
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/cmnd/query" -m "1"
 ```
 
 ### Animation Parameters
@@ -157,12 +157,12 @@ mqtt:
   light:
     - name: "IKEA Lamp"
       unique_id: ikea_head_lamp
-      state_topic: "ikea_lamp/state/json"
-      command_topic: "ikea_lamp/cmnd/power"
-      brightness_state_topic: "ikea_lamp/state/json"
-      brightness_command_topic: "ikea_lamp/cmnd/brightness"
-      rgb_state_topic: "ikea_lamp/state/json"
-      rgb_command_topic: "ikea_lamp/cmnd/color"
+      state_topic: "ikea_head_lamp/state/json"
+      command_topic: "ikea_head_lamp/cmnd/power"
+      brightness_state_topic: "ikea_head_lamp/state/json"
+      brightness_command_topic: "ikea_head_lamp/cmnd/brightness"
+      rgb_state_topic: "ikea_head_lamp/state/json"
+      rgb_command_topic: "ikea_head_lamp/cmnd/color"
       brightness_scale: 100
       payload_on: "on"
       payload_off: "off"
@@ -183,7 +183,7 @@ automation:
     action:
       - service: mqtt.publish
         data:
-          topic: "ikea_lamp/cmnd/animation"
+          topic: "ikea_head_lamp/cmnd/animation"
           payload: "sunrise:duration=30,brightness=100"
 ```
 
@@ -197,11 +197,11 @@ automation:
     action:
       - service: mqtt.publish
         data:
-          topic: "ikea_lamp/cmnd/color"
+          topic: "ikea_head_lamp/cmnd/color"
           payload: "255,147,41"
       - service: mqtt.publish
         data:
-          topic: "ikea_lamp/cmnd/brightness"
+          topic: "ikea_head_lamp/cmnd/brightness"
           payload: "60"
 ```
 
@@ -233,13 +233,13 @@ LEDs often have a minimum PWM duty cycle below which they don't light. Configure
 
 ```bash
 # Set minimum PWM to 20% (LEDs barely visible at brightness=1)
-mosquitto_pub -t "ikea_lamp/config/min_pwm/set" -m "20"
+mosquitto_pub -t "ikea_head_lamp/config/min_pwm/set" -m "20"
 
 # Set maximum PWM to 100% (LEDs at full power at brightness=100)
-mosquitto_pub -t "ikea_lamp/config/max_pwm/set" -m "100"
+mosquitto_pub -t "ikea_head_lamp/config/max_pwm/set" -m "100"
 
 # Save configuration
-mosquitto_pub -t "ikea_lamp/config/save" -m "1"
+mosquitto_pub -t "ikea_head_lamp/config/save" -m "1"
 ```
 
 ### Adding New Animations
@@ -282,9 +282,9 @@ class YourAnimation {
 - Monitor serial output for button events
 
 ### Animation stuck or jerky
-- Pause/resume: `mosquitto_pub -t "ikea_lamp/cmnd/pause" -m "toggle"`
+- Pause/resume: `mosquitto_pub -t "ikea_head_lamp/cmnd/pause" -m "toggle"`
 - Check WiFi connection (animation updates in loop)
-- Restart animation: publish to `ikea_lamp/cmnd/animation`
+- Restart animation: publish to `ikea_head_lamp/cmnd/animation`
 
 ## 📊 Memory Usage
 

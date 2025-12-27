@@ -1,6 +1,6 @@
 #include "DeviceConfig.h"
 
-const char* DeviceConfig::NVS_NAMESPACE = "ikea_lamp";
+const char* DeviceConfig::NVS_NAMESPACE = "ikea_head_lamp";
 
 DeviceConfig::DeviceConfig() 
   : defaultBrightness(70),

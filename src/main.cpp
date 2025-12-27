@@ -67,7 +67,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   lower.toLowerCase();
 
   // ---- Command: POWER ----
-  if (topic == "ikea_lamp/cmnd/power") {
+  if (topic == "ikea_head_lamp/cmnd/power") {
     if (lower == "toggle") {
       state.togglePower();
     } else if (lower == "on") {
@@ -94,7 +94,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: BRIGHTNESS ----
-  if (topic == "ikea_lamp/cmnd/brightness") {
+  if (topic == "ikea_head_lamp/cmnd/brightness") {
     int v = msg.toInt();
     if (v < 0) v = 0;
     if (v > 100) v = 100;
@@ -106,7 +106,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: COLOR (R,G,B) ----
-  if (topic == "ikea_lamp/cmnd/color") {
+  if (topic == "ikea_head_lamp/cmnd/color") {
     int r = 0, g = 0, b = 0;
     int firstComma  = msg.indexOf(',');
     int secondComma = msg.indexOf(',', firstComma + 1);
@@ -131,7 +131,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: MODE ----
-  if (topic == "ikea_lamp/cmnd/mode") {
+  if (topic == "ikea_head_lamp/cmnd/mode") {
     if (lower == "static") {
       anim.stop();
       mqtt.publishState(state, true);
@@ -143,13 +143,13 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: STATE QUERY ----
-  if (topic == "ikea_lamp/cmnd/query" || topic == "ikea_lamp/cmnd/state") {
+  if (topic == "ikea_head_lamp/cmnd/query" || topic == "ikea_head_lamp/cmnd/state") {
     mqtt.publishState(state, false);
     return;
   }
 
   // ---- Command: COLOR TEST ----
-  if (topic == "ikea_lamp/cmnd/test") {
+  if (topic == "ikea_head_lamp/cmnd/test") {
     if (lower == "color" || lower == "rgb") {
       // Cycle through R→G→B at 70% brightness for 2 seconds each
       state.powerOn = true;
@@ -184,7 +184,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: ANIMATION ----
-  if (topic == "ikea_lamp/cmnd/animation") {
+  if (topic == "ikea_head_lamp/cmnd/animation") {
     // Parse animation command: "sunrise" or "sunrise:duration=1,brightness=80,color=0,100,255"
     int colonIdx = msg.indexOf(':');
     String animName = (colonIdx > 0) ? msg.substring(0, colonIdx) : msg;
@@ -247,7 +247,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- Command: PAUSE ----
-  if (topic == "ikea_lamp/cmnd/pause") {
+  if (topic == "ikea_head_lamp/cmnd/pause") {
     if (!anim.isActive()) return;
 
     bool newPaused = state.animationPaused;
@@ -265,7 +265,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- APPLY DEFAULTS ----
-  if (topic == "ikea_lamp/cmnd/apply_defaults") {
+  if (topic == "ikea_head_lamp/cmnd/apply_defaults") {
     state.colorR = config.defaultColorR;
     state.colorG = config.defaultColorG;
     state.colorB = config.defaultColorB;
@@ -277,7 +277,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: default_brightness ----
-  if (topic == "ikea_lamp/config/default_brightness/set") {
+  if (topic == "ikea_head_lamp/config/default_brightness/set") {
     int v = msg.toInt();
     if (v < 1) v = 1;
     if (v > 100) v = 100;
@@ -288,7 +288,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: default_color ----
-  if (topic == "ikea_lamp/config/default_color/set") {
+  if (topic == "ikea_head_lamp/config/default_color/set") {
     int r = 0, g = 0, b = 0;
     int c1 = msg.indexOf(',');
     int c2 = msg.indexOf(',', c1 + 1);
@@ -309,7 +309,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: sunrise_minutes ----
-  if (topic == "ikea_lamp/config/sunrise_minutes/set") {
+  if (topic == "ikea_head_lamp/config/sunrise_minutes/set") {
     int v = msg.toInt();
     if (v < 5) v = 5;
     if (v > 180) v = 180;
@@ -320,7 +320,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: min_pwm ----
-  if (topic == "ikea_lamp/config/min_pwm/set") {
+  if (topic == "ikea_head_lamp/config/min_pwm/set") {
     int v = msg.toInt();
     if (v < 0) v = 0;
     if (v > 100) v = 100;
@@ -333,7 +333,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: max_pwm ----
-  if (topic == "ikea_lamp/config/max_pwm/set") {
+  if (topic == "ikea_head_lamp/config/max_pwm/set") {
     int v = msg.toInt();
     if (v < 0) v = 0;
     if (v > 100) v = 100;
@@ -346,7 +346,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: save ----
-  if (topic == "ikea_lamp/config/save") {
+  if (topic == "ikea_head_lamp/config/save") {
     if (configDirty) {
       config.save();
       configDirty = false;
@@ -358,7 +358,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: reset ----
-  if (topic == "ikea_lamp/config/reset") {
+  if (topic == "ikea_head_lamp/config/reset") {
     config.reset();
     configDirty = false;
     mqtt.publishConfig(config);
@@ -366,7 +366,7 @@ void handleMqttMessage(const String& topic, const String& msg) {
   }
 
   // ---- CONFIG: request ----
-  if (topic == "ikea_lamp/config/request") {
+  if (topic == "ikea_head_lamp/config/request") {
     mqtt.publishConfig(config);
     return;
   }

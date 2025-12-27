@@ -8,34 +8,34 @@
 #endif
 
 #ifndef MQTT_CLIENT_ID
-#define MQTT_CLIENT_ID "ikea_lamp_esp32"
+#define MQTT_CLIENT_ID "ikea_head_lamp_esp32"
 #endif
 
 // Static member initialization
 MqttManager* MqttManager::instance = nullptr;
 
-const char* MqttManager::MQTT_BASE = "ikea_lamp";
-const char* MqttManager::TOPIC_CMD_POWER      = "ikea_lamp/cmnd/power";
-const char* MqttManager::TOPIC_CMD_BRIGHTNESS = "ikea_lamp/cmnd/brightness";
-const char* MqttManager::TOPIC_CMD_COLOR      = "ikea_lamp/cmnd/color";
-const char* MqttManager::TOPIC_CMD_ANIMATION  = "ikea_lamp/cmnd/animation";
-const char* MqttManager::TOPIC_CMD_PAUSE      = "ikea_lamp/cmnd/pause";
-const char* MqttManager::TOPIC_CMD_MODE       = "ikea_lamp/cmnd/mode";
-const char* MqttManager::TOPIC_CMD_QUERY      = "ikea_lamp/cmnd/query";
-const char* MqttManager::TOPIC_CMD_TEST       = "ikea_lamp/cmnd/test";
-const char* MqttManager::TOPIC_CMD_APPLY_DEFAULTS = "ikea_lamp/cmnd/apply_defaults";
-const char* MqttManager::TOPIC_CFG_DEFAULT_BRI   = "ikea_lamp/config/default_brightness/set";
-const char* MqttManager::TOPIC_CFG_DEFAULT_COLOR = "ikea_lamp/config/default_color/set";
-const char* MqttManager::TOPIC_CFG_SUNRISE_MIN   = "ikea_lamp/config/sunrise_minutes/set";
-const char* MqttManager::TOPIC_CFG_MIN_PWM       = "ikea_lamp/config/min_pwm/set";
-const char* MqttManager::TOPIC_CFG_MAX_PWM       = "ikea_lamp/config/max_pwm/set";
-const char* MqttManager::TOPIC_CFG_SAVE    = "ikea_lamp/config/save";
-const char* MqttManager::TOPIC_CFG_RESET   = "ikea_lamp/config/reset";
-const char* MqttManager::TOPIC_CFG_REQUEST = "ikea_lamp/config/request";
-const char* MqttManager::TOPIC_STATE_JSON  = "ikea_lamp/state/json";
-const char* MqttManager::TOPIC_CFG_STATE   = "ikea_lamp/config/state";
-const char* MqttManager::TOPIC_DIAGNOSTICS = "ikea_lamp/diagnostics";
-const char* MqttManager::TOPIC_HEARTBEAT   = "ikea_lamp/heartbeat";
+const char* MqttManager::MQTT_BASE = "ikea_head_lamp";
+const char* MqttManager::TOPIC_CMD_POWER      = "ikea_head_lamp/cmnd/power";
+const char* MqttManager::TOPIC_CMD_BRIGHTNESS = "ikea_head_lamp/cmnd/brightness";
+const char* MqttManager::TOPIC_CMD_COLOR      = "ikea_head_lamp/cmnd/color";
+const char* MqttManager::TOPIC_CMD_ANIMATION  = "ikea_head_lamp/cmnd/animation";
+const char* MqttManager::TOPIC_CMD_PAUSE      = "ikea_head_lamp/cmnd/pause";
+const char* MqttManager::TOPIC_CMD_MODE       = "ikea_head_lamp/cmnd/mode";
+const char* MqttManager::TOPIC_CMD_QUERY      = "ikea_head_lamp/cmnd/query";
+const char* MqttManager::TOPIC_CMD_TEST       = "ikea_head_lamp/cmnd/test";
+const char* MqttManager::TOPIC_CMD_APPLY_DEFAULTS = "ikea_head_lamp/cmnd/apply_defaults";
+const char* MqttManager::TOPIC_CFG_DEFAULT_BRI   = "ikea_head_lamp/config/default_brightness/set";
+const char* MqttManager::TOPIC_CFG_DEFAULT_COLOR = "ikea_head_lamp/config/default_color/set";
+const char* MqttManager::TOPIC_CFG_SUNRISE_MIN   = "ikea_head_lamp/config/sunrise_minutes/set";
+const char* MqttManager::TOPIC_CFG_MIN_PWM       = "ikea_head_lamp/config/min_pwm/set";
+const char* MqttManager::TOPIC_CFG_MAX_PWM       = "ikea_head_lamp/config/max_pwm/set";
+const char* MqttManager::TOPIC_CFG_SAVE    = "ikea_head_lamp/config/save";
+const char* MqttManager::TOPIC_CFG_RESET   = "ikea_head_lamp/config/reset";
+const char* MqttManager::TOPIC_CFG_REQUEST = "ikea_head_lamp/config/request";
+const char* MqttManager::TOPIC_STATE_JSON  = "ikea_head_lamp/state/json";
+const char* MqttManager::TOPIC_CFG_STATE   = "ikea_head_lamp/config/state";
+const char* MqttManager::TOPIC_DIAGNOSTICS = "ikea_head_lamp/diagnostics";
+const char* MqttManager::TOPIC_HEARTBEAT   = "ikea_head_lamp/heartbeat";
 
 MqttManager::MqttManager() 
   : client(espClient), statusLED(nullptr), lastReconnectAttempt(0) {
