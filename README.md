@@ -77,8 +77,10 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 | `ikea_lamp/cmnd/brightness` | `0-100` | Set brightness (0-100%) |
 | `ikea_lamp/cmnd/color` | `R,G,B` | Set color (e.g., `255,200,100`) |
 | `ikea_lamp/cmnd/mode` | `static`, `animation` | Set operating mode |
-| `ikea_lamp/cmnd/animation` | `sunrise` | Start animation |
+| `ikea_lamp/cmnd/animation` | `sunrise`, `rainbow`, `stop` | Start/stop animation (see examples below) |
 | `ikea_lamp/cmnd/pause` | `true`, `false`, `toggle` | Pause/resume animation |
+| `ikea_lamp/cmnd/query` | any | Request immediate state publish |
+| `ikea_lamp/cmnd/test` | `color`, `rgb` | Run RGB color test (R→G→B cycle) |
 | `ikea_lamp/cmnd/apply_defaults` | any | Apply default settings |
 
 ### Configuration Topics
@@ -98,8 +100,10 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 
 | Topic | Description |
 |-------|-------------|
-| `ikea_lamp/state/json` | Current state (power, brightness, color, animation) |
-| `ikea_lamp/config/state` | Current configuration |
+| `ikea_lamp/state/json` | Current state (JSON: power, brightness, color, animation, progress) |
+| `ikea_lamp/config/state` | Current configuration (JSON) |
+| `ikea_lamp/heartbeat` | Uptime in seconds (published every 10s) |
+| `ikea_lamp/diagnostics` | System diagnostics (heap, WiFi RSSI, loop rate) |
 
 ### Example Commands
 
@@ -108,16 +112,43 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/power" -m "on"
 
 # Set to warm white at 70% brightness
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/color" -m "255,200,160"
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/color" -m "255,147,41"
 mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/brightness" -m "70"
 
-# Start 30-minute sunrise animation
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/config/sunrise_minutes/set" -m "30"
-mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/config/save" -m "1"
+# Simple sunrise (use config defaults: 30 min, warm white)
 mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise"
+
+# 1-minute blue sunrise
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=1,color=0,100,255"
+
+# 5-minute dim sunrise to 50% brightness
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=5,brightness=50"
+
+# 10-minute warm orange sunrise
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "sunrise:duration=10,brightness=80,color=255,100,0"
+
+# Start rainbow animation
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/animation" -m "rainbow"
+
+# Run RGB color test
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/test" -m "color"
+
+# Query current state
+mosquitto_pub -h 192.168.1.100 -t "ikea_lamp/cmnd/query" -m "1"
 ```
 
+### Animation Parameters
+
+**Sunrise animation** supports these parameters (all optional):
+- `duration=X` - Duration in minutes (default: 30)
+- `brightness=X` - Final brightness 0-100 (default: 100)
+- `color=R,G,B` - Final color (default: 255,147,41 warm white)
+
+Sunrise automatically progresses through color temperatures: **Deep Red (2000K) → Orange → Yellow → Final Color** over the first 70% of the animation, then holds the final color.
+
 ## 🏠 Home Assistant Integration
+
+### MQTT Light Entity
 
 Add to your `configuration.yaml`:
 
@@ -125,6 +156,7 @@ Add to your `configuration.yaml`:
 mqtt:
   light:
     - name: "IKEA Lamp"
+      unique_id: ikea_head_lamp
       state_topic: "ikea_lamp/state/json"
       command_topic: "ikea_lamp/cmnd/power"
       brightness_state_topic: "ikea_lamp/state/json"
@@ -134,9 +166,43 @@ mqtt:
       brightness_scale: 100
       payload_on: "on"
       payload_off: "off"
-      value_template: "{{ value_json.power }}"
-      brightness_value_template: "{{ value_json.brightness }}"
-      rgb_value_template: "{{ value_json.color[0] }},{{ value_json.color[1] }},{{ value_json.color[2] }}"
+      value_template: "{{ value_json.pwr }}"
+      brightness_value_template: "{{ value_json.bri }}"
+      rgb_value_template: "{{ value_json.rgb[0] }},{{ value_json.rgb[1] }},{{ value_json.rgb[2] }}"
+```
+
+### Automation Examples
+
+**Gentle wake-up (30-minute sunrise at 7 AM):**
+```yaml
+automation:
+  - alias: "Morning Wake Up"
+    trigger:
+      platform: time
+      at: "07:00:00"
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "ikea_lamp/cmnd/animation"
+          payload: "sunrise:duration=30,brightness=100"
+```
+
+**Evening reading light (warm white):**
+```yaml
+automation:
+  - alias: "Evening Reading"
+    trigger:
+      platform: time
+      at: "20:00:00"
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "ikea_lamp/cmnd/color"
+          payload: "255,147,41"
+      - service: mqtt.publish
+        data:
+          topic: "ikea_lamp/cmnd/brightness"
+          payload: "60"
 ```
 
 ## 🏗️ Architecture

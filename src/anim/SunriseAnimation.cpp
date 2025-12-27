@@ -114,6 +114,24 @@ bool SunriseAnimation::update(DeviceState* state, DeviceConfig* config) {
     state->brightness = newBrightness;
     state->bumpVersion();  // Trigger hardware update
   }
+  
+  // Color temperature progression: Red (2000K) → Orange → Yellow → Target color
+  // First 70% of animation: warm up from deep red to target
+  // Last 30%: stay at target color
+  if (progress < 0.7f) {
+    float colorProgress = progress / 0.7f;  // 0..1 over first 70%
+    
+    // Start color: deep red/orange (2000K)
+    uint8_t startR = 255;
+    uint8_t startG = 80;
+    uint8_t startB = 0;
+    
+    // Interpolate to target color
+    state->colorR = (uint8_t)round(startR + (targetR - startR) * colorProgress);
+    state->colorG = (uint8_t)round(startG + (targetG - startG) * colorProgress);
+    state->colorB = (uint8_t)round(startB + (targetB - startB) * colorProgress);
+  }
+  
   state->powerOn = true;
 
   // Check if complete

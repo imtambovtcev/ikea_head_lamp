@@ -21,6 +21,8 @@ const char* MqttManager::TOPIC_CMD_COLOR      = "ikea_lamp/cmnd/color";
 const char* MqttManager::TOPIC_CMD_ANIMATION  = "ikea_lamp/cmnd/animation";
 const char* MqttManager::TOPIC_CMD_PAUSE      = "ikea_lamp/cmnd/pause";
 const char* MqttManager::TOPIC_CMD_MODE       = "ikea_lamp/cmnd/mode";
+const char* MqttManager::TOPIC_CMD_QUERY      = "ikea_lamp/cmnd/query";
+const char* MqttManager::TOPIC_CMD_TEST       = "ikea_lamp/cmnd/test";
 const char* MqttManager::TOPIC_CMD_APPLY_DEFAULTS = "ikea_lamp/cmnd/apply_defaults";
 const char* MqttManager::TOPIC_CFG_DEFAULT_BRI   = "ikea_lamp/config/default_brightness/set";
 const char* MqttManager::TOPIC_CFG_DEFAULT_COLOR = "ikea_lamp/config/default_color/set";
@@ -125,6 +127,8 @@ void MqttManager::subscribeToTopics() {
   client.subscribe(TOPIC_CMD_ANIMATION);
   client.subscribe(TOPIC_CMD_PAUSE);
   client.subscribe(TOPIC_CMD_MODE);
+  client.subscribe(TOPIC_CMD_QUERY);
+  client.subscribe(TOPIC_CMD_TEST);
   client.subscribe(TOPIC_CMD_APPLY_DEFAULTS);
   
   client.subscribe(TOPIC_CFG_DEFAULT_BRI);

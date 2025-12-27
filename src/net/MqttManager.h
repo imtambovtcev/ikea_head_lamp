@@ -97,6 +97,8 @@ private:
   static const char* TOPIC_CMD_ANIMATION;
   static const char* TOPIC_CMD_PAUSE;
   static const char* TOPIC_CMD_MODE;
+  static const char* TOPIC_CMD_QUERY;
+  static const char* TOPIC_CMD_TEST;
   static const char* TOPIC_CMD_APPLY_DEFAULTS;
   static const char* TOPIC_CFG_DEFAULT_BRI;
   static const char* TOPIC_CFG_DEFAULT_COLOR;

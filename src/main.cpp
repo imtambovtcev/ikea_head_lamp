@@ -142,6 +142,47 @@ void handleMqttMessage(const String& topic, const String& msg) {
     return;
   }
 
+  // ---- Command: STATE QUERY ----
+  if (topic == "ikea_lamp/cmnd/query" || topic == "ikea_lamp/cmnd/state") {
+    mqtt.publishState(state, false);
+    return;
+  }
+
+  // ---- Command: COLOR TEST ----
+  if (topic == "ikea_lamp/cmnd/test") {
+    if (lower == "color" || lower == "rgb") {
+      // Cycle through R→G→B at 70% brightness for 2 seconds each
+      state.powerOn = true;
+      state.brightness = 70;
+      
+      // Red
+      state.colorR = 255; state.colorG = 0; state.colorB = 0;
+      state.bumpVersion();
+      mqtt.publishState(state, false);
+      delay(2000);
+      
+      // Green
+      state.colorR = 0; state.colorG = 255; state.colorB = 0;
+      state.bumpVersion();
+      mqtt.publishState(state, false);
+      delay(2000);
+      
+      // Blue
+      state.colorR = 0; state.colorG = 0; state.colorB = 255;
+      state.bumpVersion();
+      mqtt.publishState(state, false);
+      delay(2000);
+      
+      // Back to warm white
+      state.colorR = config.defaultColorR;
+      state.colorG = config.defaultColorG;
+      state.colorB = config.defaultColorB;
+      state.bumpVersion();
+      mqtt.publishState(state, false);
+    }
+    return;
+  }
+
   // ---- Command: ANIMATION ----
   if (topic == "ikea_lamp/cmnd/animation") {
     // Parse animation command: "sunrise" or "sunrise:duration=1,brightness=80,color=0,100,255"

@@ -32,9 +32,12 @@ void LampHardware::apply(bool power, uint8_t brightness,
 
   float physicalPercent = logicalToPhysical(brightness, minPwmPercent, maxPwmPercent);
   
-  uint8_t adjR = (uint8_t)round(r * physicalPercent);
-  uint8_t adjG = (uint8_t)round(g * physicalPercent);
-  uint8_t adjB = (uint8_t)round(b * physicalPercent);
+  // Apply gamma correction (2.2) for perceptually linear brightness
+  float gammaPercent = pow(physicalPercent, 2.2f);
+  
+  uint8_t adjR = (uint8_t)round(r * gammaPercent);
+  uint8_t adjG = (uint8_t)round(g * gammaPercent);
+  uint8_t adjB = (uint8_t)round(b * gammaPercent);
 
   uint32_t maxDuty = (1UL << PWM_BITS) - 1;
   uint32_t dutyR = (uint32_t)round((adjR / 255.0f) * maxDuty);
