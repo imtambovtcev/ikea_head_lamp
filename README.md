@@ -34,7 +34,7 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 |--------|----------|
 | **Single Click** | Toggle power (turn on to default color OR turn off) |
 | **Long Press** | Pause/play current animation |
-| **Double Click** | Start rainbow animation |
+| **Double Click** | Start favorite animation (default: fire) |
 
 ## 📦 Installation
 
@@ -100,9 +100,36 @@ Transform your IKEA head lamp into a smart RGB LED light with MQTT control, smoo
 | `ikea_head_lamp/config/sunrise_minutes/set` | `5-180` | Sunrise duration (minutes) |
 | `ikea_head_lamp/config/min_pwm/set` | `0-100` | Min PWM duty cycle (%) |
 | `ikea_head_lamp/config/max_pwm/set` | `0-100` | Max PWM duty cycle (%) |
+| `ikea_head_lamp/config/favorite_animation/set` | animation spec | Set favorite animation for double-click button |
 | `ikea_head_lamp/config/save` | any | Save config to flash |
 | `ikea_head_lamp/config/reset` | any | Reset to defaults |
 | `ikea_head_lamp/config/request` | any | Request current config |
+
+**Favorite Animation Configuration**
+
+The favorite animation is triggered by double-clicking the button. You can configure which animation and parameters to use:
+
+```bash
+# Set favorite to fire with intensity=80, speed=7
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "fire:intensity=80,speed=7"
+
+# Set favorite to breathe with 6-second cycle, blue color
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "breathe:duration=6,color=0,100,255"
+
+# Set favorite to ocean waves
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "ocean:speed=8,brightness=50"
+
+# Set favorite to sunrise (10-minute warm sunrise)
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "sunrise:duration=10,brightness=80"
+
+# Set favorite to just rainbow (no parameters)
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/favorite_animation/set" -m "rainbow"
+
+# Save the configuration to flash (persists after reboot)
+mosquitto_pub -h 192.168.1.100 -t "ikea_head_lamp/config/save" -m "1"
+```
+
+The default favorite animation is **fire** with intensity=70, speed=5.
 
 ### State Topics
 

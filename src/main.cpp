@@ -371,6 +371,10 @@ void handleMqttMessage(const String& topic, const String& msg) {
       
       anim.startOcean(speed, brightness);
       mqtt.publishState(state, true);
+    } else if (animName == "favorite") {
+      // Start the favorite animation with saved parameters
+      anim.startFavorite();
+      mqtt.publishState(state, true);
     } else if (animName == "stop") {
       anim.stop();
       mqtt.publishState(state, true);
@@ -475,6 +479,125 @@ void handleMqttMessage(const String& topic, const String& msg) {
     if (config.maxPwmPercent <= config.minPwmPercent)
       config.minPwmPercent = config.maxPwmPercent - 1;
     configDirty = true;
+    mqtt.publishConfig(config);
+    return;
+  }
+
+  // ---- CONFIG: favorite animation ----
+  if (topic == "ikea_head_lamp/config/favorite_animation/set") {
+    // Format: "fire:intensity=80,speed=7" or "breathe:duration=6,color=0,100,255" or just "ocean"
+    String animName = msg;
+    int colonIdx = msg.indexOf(':');
+    
+    if (colonIdx > 0) {
+      animName = msg.substring(0, colonIdx);
+      String params = msg.substring(colonIdx + 1);
+      
+      // Reset all params to zero first
+      config.favAnimParam1 = 0;
+      config.favAnimParam2 = 0;
+      config.favAnimParam3 = 0;
+      config.favAnimColorR = 0;
+      config.favAnimColorG = 0;
+      config.favAnimColorB = 0;
+      
+      // Parse parameters based on animation type
+      if (animName == "fire" || animName == "ocean") {
+        // Parse intensity/brightness and speed
+        int intIdx = params.indexOf("intensity=");
+        if (intIdx < 0) intIdx = params.indexOf("brightness=");
+        if (intIdx >= 0) {
+          int intEnd = params.indexOf(',', intIdx);
+          if (intEnd < 0) intEnd = params.length();
+          int startPos = params.indexOf('=', intIdx) + 1;
+          config.favAnimParam1 = params.substring(startPos, intEnd).toInt();
+        }
+        
+        int spdIdx = params.indexOf("speed=");
+        if (spdIdx >= 0) {
+          int spdEnd = params.indexOf(',', spdIdx);
+          if (spdEnd < 0) spdEnd = params.length();
+          config.favAnimParam2 = params.substring(spdIdx + 6, spdEnd).toInt();
+        }
+      } else if (animName == "breathe") {
+        // Parse duration, maxBrightness, minBrightness
+        int durIdx = params.indexOf("duration=");
+        if (durIdx >= 0) {
+          int durEnd = params.indexOf(',', durIdx);
+          if (durEnd < 0) durEnd = params.length();
+          config.favAnimParam1 = params.substring(durIdx + 9, durEnd).toInt();
+        }
+        
+        int maxIdx = params.indexOf("max=");
+        if (maxIdx >= 0) {
+          int maxEnd = params.indexOf(',', maxIdx);
+          if (maxEnd < 0) maxEnd = params.length();
+          config.favAnimParam2 = params.substring(maxIdx + 4, maxEnd).toInt();
+        }
+        
+        int minIdx = params.indexOf("min=");
+        if (minIdx >= 0) {
+          int minEnd = params.indexOf(',', minIdx);
+          if (minEnd < 0) minEnd = params.length();
+          config.favAnimParam3 = params.substring(minIdx + 4, minEnd).toInt();
+        }
+        
+        // Parse color
+        int colIdx = params.indexOf("color=");
+        if (colIdx >= 0) {
+          int colStart = colIdx + 6;
+          int comma1 = params.indexOf(',', colStart);
+          int comma2 = params.indexOf(',', comma1 + 1);
+          int colEnd = params.indexOf(',', comma2 + 1);
+          if (colEnd < 0) colEnd = params.length();
+          
+          if (comma1 > colStart && comma2 > comma1) {
+            config.favAnimColorR = params.substring(colStart, comma1).toInt();
+            config.favAnimColorG = params.substring(comma1 + 1, comma2).toInt();
+            config.favAnimColorB = params.substring(comma2 + 1, colEnd).toInt();
+          }
+        }
+      } else if (animName == "sunrise" || animName == "sunset") {
+        // Parse duration, brightness/finalBrightness
+        int durIdx = params.indexOf("duration=");
+        if (durIdx >= 0) {
+          int durEnd = params.indexOf(',', durIdx);
+          if (durEnd < 0) durEnd = params.length();
+          config.favAnimParam1 = params.substring(durIdx + 9, durEnd).toInt();
+        }
+        
+        int briIdx = params.indexOf("brightness=");
+        if (briIdx >= 0) {
+          int briEnd = params.indexOf(',', briIdx);
+          if (briEnd < 0) briEnd = params.length();
+          config.favAnimParam2 = params.substring(briIdx + 11, briEnd).toInt();
+        }
+        
+        // Parse color (for sunrise)
+        int colIdx = params.indexOf("color=");
+        if (colIdx >= 0) {
+          int colStart = colIdx + 6;
+          int comma1 = params.indexOf(',', colStart);
+          int comma2 = params.indexOf(',', comma1 + 1);
+          int colEnd = params.indexOf(',', comma2 + 1);
+          if (colEnd < 0) colEnd = params.length();
+          
+          if (comma1 > colStart && comma2 > comma1) {
+            config.favAnimColorR = params.substring(colStart, comma1).toInt();
+            config.favAnimColorG = params.substring(comma1 + 1, comma2).toInt();
+            config.favAnimColorB = params.substring(comma2 + 1, colEnd).toInt();
+          }
+        }
+      }
+      // Rainbow has no parameters, so nothing to parse
+    }
+    
+    config.favoriteAnimation = animName;
+    configDirty = true;
+    
+    Serial.print("[CFG] Favorite animation set to: ");
+    Serial.println(animName);
+    
     mqtt.publishConfig(config);
     return;
   }
@@ -616,8 +739,8 @@ void loop() {
   if (btnEvent == ButtonEvent::DoublePress) {
     statusLED.blink(3, 50);  // Triple blink on double-press
     
-    // Double click: Start rainbow animation
-    anim.startRainbow();
+    // Double click: Start favorite animation
+    anim.startFavorite();
     
     mqtt.publishState(state, true);
   }

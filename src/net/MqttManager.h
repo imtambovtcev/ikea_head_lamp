@@ -108,6 +108,7 @@ private:
   static const char* TOPIC_CFG_SAVE;
   static const char* TOPIC_CFG_RESET;
   static const char* TOPIC_CFG_REQUEST;
+  static const char* TOPIC_CFG_FAVORITE_ANIMATION;
   static const char* TOPIC_STATE_JSON;
   static const char* TOPIC_CFG_STATE;
   static const char* TOPIC_DIAGNOSTICS;   // System health info

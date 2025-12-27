@@ -26,6 +26,15 @@ public:
   uint8_t  minPwmPercent;
   uint8_t  maxPwmPercent;
 
+  // Favorite animation (triggered by double-click)
+  String   favoriteAnimation;    // "fire", "breathe", "ocean", "rainbow", etc.
+  uint8_t  favAnimParam1;        // Generic param 1 (intensity, speed, duration, etc.)
+  uint8_t  favAnimParam2;        // Generic param 2 (speed, brightness, etc.)
+  uint8_t  favAnimParam3;        // Generic param 3 (min_brightness, etc.)
+  uint8_t  favAnimColorR;        // Color R for animations that support it
+  uint8_t  favAnimColorG;        // Color G
+  uint8_t  favAnimColorB;        // Color B
+
   uint32_t version;         // Config version, increments on save
 
   DeviceConfig();

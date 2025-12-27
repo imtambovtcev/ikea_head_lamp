@@ -96,6 +96,35 @@ void AnimationEngine::startOcean(uint8_t speed, uint8_t brightness) {
   ocean.start(state, config, speed, brightness);
 }
 
+void AnimationEngine::startFavorite() {
+  if (!state || !config) return;
+  
+  // Stop any active animation first
+  stop();
+  
+  // Start animation based on favoriteAnimation name
+  String anim = config->favoriteAnimation;
+  
+  if (anim == "sunrise") {
+    startSunrise(config->favAnimParam1, config->favAnimParam2, 
+                 config->favAnimColorR, config->favAnimColorG, config->favAnimColorB);
+  } else if (anim == "sunset") {
+    startSunset(config->favAnimParam1, config->favAnimParam2);
+  } else if (anim == "fire") {
+    startFire(config->favAnimParam1, config->favAnimParam2);
+  } else if (anim == "breathe") {
+    startBreathe(config->favAnimParam1, config->favAnimParam2, config->favAnimParam3,
+                 config->favAnimColorR, config->favAnimColorG, config->favAnimColorB);
+  } else if (anim == "ocean") {
+    startOcean(config->favAnimParam1, config->favAnimParam2);
+  } else if (anim == "rainbow") {
+    startRainbow();
+  } else {
+    // Default to fire if unknown
+    startFire(70, 5);
+  }
+}
+
 void AnimationEngine::stop() {
   if (!state) return;
   

@@ -8,6 +8,7 @@
 # Credentials - DO NOT COMMIT
 include/wifi_config.h
 include/mqtt_config.h
+test/mqtt_test_config.py
 
 # Backup files
 src/main_old.cpp

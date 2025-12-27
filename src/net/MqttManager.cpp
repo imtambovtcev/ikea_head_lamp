@@ -32,6 +32,7 @@ const char* MqttManager::TOPIC_CFG_MAX_PWM       = "ikea_head_lamp/config/max_pw
 const char* MqttManager::TOPIC_CFG_SAVE    = "ikea_head_lamp/config/save";
 const char* MqttManager::TOPIC_CFG_RESET   = "ikea_head_lamp/config/reset";
 const char* MqttManager::TOPIC_CFG_REQUEST = "ikea_head_lamp/config/request";
+const char* MqttManager::TOPIC_CFG_FAVORITE_ANIMATION = "ikea_head_lamp/config/favorite_animation/set";
 const char* MqttManager::TOPIC_STATE_JSON  = "ikea_head_lamp/state/json";
 const char* MqttManager::TOPIC_CFG_STATE   = "ikea_head_lamp/config/state";
 const char* MqttManager::TOPIC_DIAGNOSTICS = "ikea_head_lamp/diagnostics";
@@ -46,7 +47,8 @@ void MqttManager::begin(MessageCallback callback) {
   Serial.println("[MQTT] Initializing MQTT manager");
   messageCallback = callback;
   
-  // Keep default buffer size (256 bytes)
+  // Increase buffer size to 512 bytes for config messages with favorite animation
+  client.setBufferSize(512);
   
   // Reduce keepalive to detect connection issues faster
   client.setKeepAlive(15);
@@ -139,6 +141,7 @@ void MqttManager::subscribeToTopics() {
   client.subscribe(TOPIC_CFG_SAVE);
   client.subscribe(TOPIC_CFG_RESET);
   client.subscribe(TOPIC_CFG_REQUEST);
+  client.subscribe(TOPIC_CFG_FAVORITE_ANIMATION);
 }
 
 void MqttManager::publishState(const DeviceState& state, bool retain) {
@@ -191,7 +194,7 @@ void MqttManager::publishState(const DeviceState& state, bool retain) {
 void MqttManager::publishConfig(const DeviceConfig& config) {
   if (!client.connected()) return;
 
-  char buf[256];
+  char buf[512];  // Increased buffer size for favorite animation
   snprintf(buf, sizeof(buf),
            "{\"default_brightness\":%u,"
            "\"default_color\":[%u,%u,%u],"
@@ -199,6 +202,9 @@ void MqttManager::publishConfig(const DeviceConfig& config) {
            "\"sunrise_final_brightness\":%u,"
            "\"min_pwm\":%u,"
            "\"max_pwm\":%u,"
+           "\"favorite_animation\":\"%s\","
+           "\"favorite_params\":[%u,%u,%u],"
+           "\"favorite_color\":[%u,%u,%u],"
            "\"version\":%lu}",
            config.defaultBrightness,
            config.defaultColorR, config.defaultColorG, config.defaultColorB,
@@ -206,6 +212,9 @@ void MqttManager::publishConfig(const DeviceConfig& config) {
            config.sunriseFinalBrightness,
            config.minPwmPercent,
            config.maxPwmPercent,
+           config.favoriteAnimation.c_str(),
+           config.favAnimParam1, config.favAnimParam2, config.favAnimParam3,
+           config.favAnimColorR, config.favAnimColorG, config.favAnimColorB,
            (unsigned long)config.version);
 
   client.publish(TOPIC_CFG_STATE, buf, true);

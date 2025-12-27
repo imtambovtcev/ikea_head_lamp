@@ -1,11 +1,224 @@
+# Test Scripts
 
-This directory is intended for PlatformIO Test Runner and project tests.
+This directory contains comprehensive Python test scripts for validating IKEA Head Lamp firmware functionality via MQTT.
 
-Unit Testing is a software testing method by which individual units of
-source code, sets of one or more MCU program modules together with associated
-control data, usage procedures, and operating procedures, are tested to
-determine whether they are fit for use. Unit testing finds problems early
-in the development cycle.
+## Setup
 
-More information about PlatformIO Unit Testing:
-- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Copy the example config file:**
+   ```bash
+   cp mqtt_test_config.py.example mqtt_test_config.py
+   ```
+
+3. **Edit `mqtt_test_config.py` with your broker details:**
+   ```python
+   MQTT_CONFIG = {
+       "host": "192.168.1.100",
+       "port": 1883,
+       "username": "",  # Leave empty if no auth
+       "password": "",
+       "device_topic": "ikea_head_lamp"
+   }
+   ```
+
+**Note:** The config file is gitignored - it won't be committed.
+
+## Running Tests
+
+### Run All Tests
+```bash
+python3 test/run_all_tests.py
+```
+
+This runs all test suites in sequence and provides a comprehensive report.
+
+### Individual Test Suites
+
+#### 1. Basic Commands (`test_basic_commands.py`)
+Tests fundamental MQTT commands.
+
+```bash
+python3 test/test_basic_commands.py
+```
+
+**Tests:**
+- ✓ Power ON/OFF/Toggle
+- ✓ Brightness control (0-100%)
+- ✓ Color RGB control
+- ✓ Apply default settings
+
+**Example:**
+```
+✓ PASS: state/json.pwr (Expected: 1)
+✓ PASS: state/json.bri (Expected: 50)
+✓ PASS: Color RGB values (Expected: [255, 147, 41])
+```
+
+#### 2. Configuration Management (`test_configuration.py`)
+Tests config save/load and NVS persistence.
+
+```bash
+python3 test/test_configuration.py
+```
+
+**Tests:**
+- ✓ Request and receive config
+- ✓ Set default brightness
+- ✓ Set default color
+- ✓ Set sunrise duration
+- ✓ Save config to NVS
+- ✓ Verify persistence
+- ✓ Reset to defaults
+
+#### 3. Animations (`test_animations.py`)
+Tests all animation types with parameters.
+
+```bash
+python3 test/test_animations.py
+```
+
+**Tests:**
+- ✓ Fire animation (intensity, speed)
+- ✓ Ocean animation (speed, brightness)
+- ✓ Breathe animation (duration, color)
+- ✓ Rainbow animation
+- ✓ Stop command
+
+#### 4. Pause/Play (`test_pause_play.py`)
+Tests animation pause/play functionality.
+
+```bash
+python3 test/test_pause_play.py
+```
+
+**Tests:**
+- ✓ Pause animation (true/1)
+- ✓ Unpause animation (false/0)
+- ✓ Toggle pause state
+- ✓ Pause state persistence
+
+#### 5. Favorite Animation (`test_favorite_animation.py`)
+Comprehensive test of favorite animation feature.
+
+```bash
+python3 test/test_favorite_animation.py
+```
+
+**Tests:**
+- ✓ Default favorite (fire, intensity=70, speed=5)
+- ✓ Trigger favorite via MQTT
+- ✓ Change favorite to rainbow
+- ✓ Config update verification
+- ✓ NVS persistence
+- ✓ Custom parameters (ocean with speed/brightness)
+- ✓ Parameter storage validation
+
+#### 6. Button Controls (`test_button_controls.py`) ⚠️ **Manual**
+Interactive test requiring physical button presses.
+
+```bash
+python3 test/test_button_controls.py
+```
+
+**Tests:**
+- 🔘 Single click → Power toggle
+- 🔘 Long press → Pause/play animation
+- 🔘 Double click → Start favorite animation
+
+**This test prompts you when to press buttons and validates the MQTT responses.**
+
+## Test Utilities
+
+### mqtt_test_utils.py
+Core testing framework providing:
+- `MQTTTestClient` - MQTT client with message capture and assertions
+- `TestResult` - Test result data structure
+- Colored console output (✓ green pass, ✗ red fail)
+- JSON parsing and validation
+- Automatic config request/response handling
+
+### Monitoring MQTT Messages
+
+To watch MQTT messages during testing:
+
+```bash
+# In a separate terminal
+mosquitto_sub -h 192.168.50.247 -t "ikea_head_lamp/#" -v
+```
+
+Or use Python:
+```python
+from mqtt_test_utils import MQTTTestClient
+
+client = MQTTTestClient()
+client.connect()
+
+# Wait for messages
+while True:
+    msg = client.wait_for_message("state/json", timeout=1)
+    if msg:
+        print(msg['json'])
+```
+
+## Expected Outputs
+
+### Config State with Favorite Animation
+```json
+{
+  "default_brightness": 70,
+  "default_color": [255, 147, 41],
+  "sunrise_minutes": 30,
+  "sunrise_final_brightness": 100,
+  "min_pwm": 20,
+  "max_pwm": 100,
+  "favorite_animation": "fire",
+  "favorite_params": [70, 5, 0],
+  "favorite_color": [0, 0, 0],
+  "version": 1
+}
+```
+
+### State with Active Animation
+```json
+{
+  "pwr": 1,
+  "bri": 46,
+  "rgb": [255, 152, 0],
+  "anim": "fire",
+  "pause": 0,
+  "prog": 0,
+  "dur": 0,
+  "final_bri": 0,
+  "final_rgb": [0, 0, 0],
+  "end": "loop",
+  "ver": 42
+}
+```
+
+## Test Coverage
+
+The test suite validates:
+- ✅ Power control (on/off/toggle)
+- ✅ Brightness control (0-100%)
+- ✅ RGB color setting
+- ✅ All 6 animations (sunrise, sunset, rainbow, fire, breathe, ocean)
+- ✅ Animation parameters (intensity, speed, duration, color, etc.)
+- ✅ Pause/play functionality
+- ✅ Favorite animation configuration
+- ✅ NVS persistence (save/load/reset)
+- ✅ Configuration management
+- ✅ Physical button controls (manual test)
+- ✅ MQTT message validation
+- ✅ State transitions
+
+## Exit Codes
+
+All test scripts return proper exit codes:
+- `0` - All tests passed
+- `1` - One or more tests failed
+
+This makes them suitable for CI/CD integration.

@@ -92,6 +92,11 @@ public:
   void startOcean(uint8_t speed = 5, uint8_t brightness = 70);
 
   /**
+   * Start favorite animation from config.
+   */
+  void startFavorite();
+
+  /**
    * Stop any active animation.
    */
   void stop();

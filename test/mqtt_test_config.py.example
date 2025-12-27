@@ -1,0 +1,11 @@
+# Python MQTT Test Configuration
+# Copy this file to mqtt_test_config.py and update with your broker details
+# (mqtt_test_config.py is gitignored and will not be committed)
+
+MQTT_CONFIG = {
+    "host": "192.168.1.100",
+    "port": 1883,
+    "username": "",  # Leave empty if no auth
+    "password": "",  # Leave empty if no auth
+    "device_topic": "ikea_head_lamp"
+}
