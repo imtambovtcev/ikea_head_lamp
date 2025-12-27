@@ -45,9 +45,7 @@ void LampHardware::apply(bool power, uint8_t brightness,
   ledcWrite(PWM_CHANNEL_GREEN, dutyG);
   ledcWrite(PWM_CHANNEL_BLUE,  dutyB);
 
-  Serial.printf("[HW] Applied: power=%d, bri=%u, phys=%.2f%%, RGB=(%u,%u,%u), duty=(%lu,%lu,%lu)\n",
-                power, brightness, physicalPercent * 100.0f,
-                adjR, adjG, adjB, dutyR, dutyG, dutyB);
+  // Serial output removed - was blocking loop
 }
 
 float LampHardware::logicalToPhysical(uint8_t logical, uint8_t minPwm, uint8_t maxPwm) {

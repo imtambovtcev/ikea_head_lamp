@@ -1,7 +1,8 @@
 #include "Button.h"
 
 Button::Button() 
-  : lastStable(HIGH), lastRaw(HIGH), lastChange(0) {
+  : lastStable(HIGH), lastRaw(HIGH), lastChange(0), 
+    pressStartTime(0), longPressReported(false) {
 }
 
 void Button::begin() {
@@ -12,16 +13,17 @@ void Button::begin() {
 
 ButtonEvent Button::update() {
   int raw = digitalRead(PIN_BUTTON);
+  unsigned long now = millis();
 
   // Detect edge
   if (raw != lastRaw) {
     lastRaw = raw;
-    lastChange = millis();
+    lastChange = now;
     return ButtonEvent::None;
   }
 
   // Wait for debounce period
-  if ((millis() - lastChange) < DEBOUNCE_MS) {
+  if ((now - lastChange) < DEBOUNCE_MS) {
     return ButtonEvent::None;
   }
 
@@ -30,8 +32,23 @@ ButtonEvent Button::update() {
     lastStable = raw;
 
     if (raw == LOW) {
-      Serial.println("[BTN] Press detected");
-      return ButtonEvent::Press;
+      // Button pressed - start tracking
+      pressStartTime = now;
+      longPressReported = false;
+    } else {
+      // Button released
+      if (!longPressReported) {
+        // Short press (released before long press threshold)
+        return ButtonEvent::Press;
+      }
+    }
+  }
+
+  // Check for long press (button held down)
+  if (lastStable == LOW && !longPressReported) {
+    if ((now - pressStartTime) >= 1000) {  // 1 second long press
+      longPressReported = true;
+      return ButtonEvent::LongPress;
     }
   }
 

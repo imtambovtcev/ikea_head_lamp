@@ -10,31 +10,32 @@ void StatusLED::begin() {
 }
 
 void StatusLED::blink(uint8_t count, uint16_t delayMs) {
+  // Quick non-blocking blink
   for (uint8_t i = 0; i < count; i++) {
     digitalWrite(PIN_LED, LOW);   // LOW = ON (inverted)
-    delay(delayMs);
+    delayMicroseconds(delayMs * 1000);  // Non-blocking for short delays
     digitalWrite(PIN_LED, HIGH);  // HIGH = OFF (inverted)
     if (i < count - 1) {
-      delay(delayMs);
+      delayMicroseconds(delayMs * 1000);
     }
   }
 }
 
 void StatusLED::startupAnimation() {
   Serial.println("[LED] Startup animation");
-  // Three quick blinks to indicate boot
+  // Quick startup blinks - acceptable to block during setup
   for (uint8_t i = 0; i < 3; i++) {
     digitalWrite(PIN_LED, LOW);   // LOW = ON (inverted)
-    delay(150);
+    delay(100);  // Shorter delay
     digitalWrite(PIN_LED, HIGH);  // HIGH = OFF (inverted)
-    delay(150);
+    delay(100);
   }
 }
 
 void StatusLED::wifiConnecting() {
-  // Single slow blink during connection attempt
+  // Single quick pulse - non-blocking
   digitalWrite(PIN_LED, LOW);   // LOW = ON (inverted)
-  delay(100);
+  delayMicroseconds(50000);     // 50ms
   digitalWrite(PIN_LED, HIGH);  // HIGH = OFF (inverted)
 }
 
@@ -51,9 +52,9 @@ void StatusLED::wifiFailed() {
 }
 
 void StatusLED::mqttConnecting() {
-  // Single medium blink
+  // Single quick pulse - non-blocking
   digitalWrite(PIN_LED, LOW);   // LOW = ON (inverted)
-  delay(50);
+  delayMicroseconds(30000);     // 30ms
   digitalWrite(PIN_LED, HIGH);  // HIGH = OFF (inverted)
 }
 
@@ -65,12 +66,12 @@ void StatusLED::mqttConnected() {
 
 void StatusLED::mqttFailed() {
   Serial.println("[LED] MQTT failed");
-  // One long + three short = MQTT error
+  // Quick error indication
   digitalWrite(PIN_LED, LOW);   // LOW = ON (inverted)
-  delay(300);
+  delayMicroseconds(200000);    // 200ms
   digitalWrite(PIN_LED, HIGH);  // HIGH = OFF (inverted)
-  delay(100);
-  blink(3, 60);
+  delayMicroseconds(50000);
+  blink(3, 40);  // Fast blinks
 }
 
 void StatusLED::set(bool on) {

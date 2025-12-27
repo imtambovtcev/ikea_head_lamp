@@ -16,12 +16,28 @@ void AnimationEngine::loop() {
   if (sunrise.isActive()) {
     sunrise.update(state, config);
   }
+  
+  if (rainbow.isActive()) {
+    rainbow.update(state, config);
+  }
 }
 
 void AnimationEngine::startSunrise() {
   if (!state || !config) return;
   
+  // Stop any active animation first
+  stop();
+  
   sunrise.start(state, config);
+}
+
+void AnimationEngine::startRainbow() {
+  if (!state || !config) return;
+  
+  // Stop any active animation first
+  stop();
+  
+  rainbow.start(state, config);
 }
 
 void AnimationEngine::stop() {
@@ -29,6 +45,10 @@ void AnimationEngine::stop() {
   
   if (sunrise.isActive()) {
     sunrise.stop(state);
+  }
+  
+  if (rainbow.isActive()) {
+    rainbow.stop(state);
   }
 }
 
@@ -38,8 +58,12 @@ void AnimationEngine::setPaused(bool paused) {
   if (sunrise.isActive()) {
     sunrise.setPaused(paused, state);
   }
+  
+  if (rainbow.isActive()) {
+    rainbow.setPaused(paused, state);
+  }
 }
 
 bool AnimationEngine::isActive() const {
-  return sunrise.isActive();
+  return sunrise.isActive() || rainbow.isActive();
 }

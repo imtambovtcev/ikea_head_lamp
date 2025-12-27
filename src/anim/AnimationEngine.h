@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "SunriseAnimation.h"
+#include "RainbowAnimation.h"
 #include "../state/DeviceState.h"
 #include "../state/DeviceConfig.h"
 
@@ -37,6 +38,11 @@ public:
   void startSunrise();
 
   /**
+   * Start rainbow animation.
+   */
+  void startRainbow();
+
+  /**
    * Stop any active animation.
    */
   void stop();
@@ -57,6 +63,7 @@ private:
   DeviceState* state;
   DeviceConfig* config;
   SunriseAnimation sunrise;
+  RainbowAnimation rainbow;
 };
 
 #endif // ANIMATION_ENGINE_H

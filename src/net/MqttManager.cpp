@@ -32,6 +32,8 @@ const char* MqttManager::TOPIC_CFG_RESET   = "ikea_lamp/config/reset";
 const char* MqttManager::TOPIC_CFG_REQUEST = "ikea_lamp/config/request";
 const char* MqttManager::TOPIC_STATE_JSON  = "ikea_lamp/state/json";
 const char* MqttManager::TOPIC_CFG_STATE   = "ikea_lamp/config/state";
+const char* MqttManager::TOPIC_DIAGNOSTICS = "ikea_lamp/diagnostics";
+const char* MqttManager::TOPIC_HEARTBEAT   = "ikea_lamp/heartbeat";
 
 MqttManager::MqttManager() 
   : client(espClient), statusLED(nullptr), lastReconnectAttempt(0) {
@@ -41,6 +43,15 @@ MqttManager::MqttManager()
 void MqttManager::begin(MessageCallback callback) {
   Serial.println("[MQTT] Initializing MQTT manager");
   messageCallback = callback;
+  
+  // Keep default buffer size (256) to save heap
+  // client.setBufferSize(512);
+  
+  // Reduce keepalive to detect connection issues faster
+  client.setKeepAlive(15);
+  
+  // Set socket timeout to prevent long blocking
+  client.setSocketTimeout(5);
   
   client.setServer(MQTT_HOST, MQTT_PORT);
   client.setCallback(mqttCallbackWrapper);
@@ -56,7 +67,13 @@ void MqttManager::loop() {
       connectMqtt();
     }
   } else {
-    client.loop();
+    // Throttle client.loop() to reduce WiFi overhead
+    static unsigned long lastClientLoop = 0;
+    unsigned long now = millis();
+    if ((now - lastClientLoop) >= 10) {  // Call max 100 times/sec
+      client.loop();
+      lastClientLoop = now;
+    }
   }
 }
 
@@ -142,7 +159,7 @@ void MqttManager::publishState(const DeviceState& state, bool retain) {
            (unsigned long)state.version);
 
   client.publish(TOPIC_STATE_JSON, buf, retain);
-  Serial.printf("[MQTT] Published state: %s\n", buf);
+  // Serial output removed - was blocking loop and causing watchdog timeouts
 }
 
 void MqttManager::publishConfig(const DeviceConfig& config) {
@@ -166,20 +183,61 @@ void MqttManager::publishConfig(const DeviceConfig& config) {
            (unsigned long)config.version);
 
   client.publish(TOPIC_CFG_STATE, buf, true);
-  Serial.printf("[MQTT] Published config: %s\n", buf);
+  // Serial output removed - was blocking loop
+}
+
+void MqttManager::publishDiagnostics(unsigned long uptime, uint32_t freeHeap,
+                                      uint32_t minHeap, const String& resetReason,
+                                      unsigned long loopCount) {
+  if (!client.connected()) return;
+
+  char buf[300];
+  unsigned long loopsPerSec = (uptime > 0) ? (loopCount / uptime) : 0;
+  
+  snprintf(buf, sizeof(buf),
+           "{\"uptime_s\":%lu,"
+           "\"free_heap\":%lu,"
+           "\"min_heap\":%lu,"
+           "\"reset_reason\":\"%s\","
+           "\"loop_count\":%lu,"
+           "\"loops_per_sec\":%lu,"
+           "\"wifi_rssi\":%d}",
+           uptime, (unsigned long)freeHeap, (unsigned long)minHeap,
+           resetReason.c_str(), loopCount, loopsPerSec, WiFi.RSSI());
+
+  client.publish(TOPIC_DIAGNOSTICS, buf, false);
+  // Serial output removed - was blocking loop and causing watchdog timeouts
+}
+
+void MqttManager::publishHeartbeat() {
+  if (!client.connected()) return;
+  
+  char buf[32];
+  snprintf(buf, sizeof(buf), "%lu", millis() / 1000);
+  client.publish(TOPIC_HEARTBEAT, buf, false);
 }
 
 void MqttManager::mqttCallbackWrapper(char* topic, byte* payload, unsigned int length) {
   if (instance && instance->messageCallback) {
-    String t = String(topic);
-    String msg;
-    msg.reserve(length + 1);
-    for (unsigned int i = 0; i < length; i++) {
-      msg += (char)payload[i];
+    // Use static buffers to avoid heap fragmentation from String objects
+    static char topicBuf[64];
+    static char msgBuf[256];
+    
+    // Copy topic
+    strncpy(topicBuf, topic, sizeof(topicBuf) - 1);
+    topicBuf[sizeof(topicBuf) - 1] = '\0';
+    
+    // Copy payload
+    size_t copyLen = (length < sizeof(msgBuf) - 1) ? length : (sizeof(msgBuf) - 1);
+    memcpy(msgBuf, payload, copyLen);
+    msgBuf[copyLen] = '\0';
+    
+    // Trim trailing whitespace
+    while (copyLen > 0 && (msgBuf[copyLen-1] == ' ' || msgBuf[copyLen-1] == '\n' || msgBuf[copyLen-1] == '\r')) {
+      msgBuf[--copyLen] = '\0';
     }
-    msg.trim();
 
-    Serial.printf("[MQTT] RX topic='%s' payload='%s'\n", t.c_str(), msg.c_str());
-    instance->messageCallback(t, msg);
+    // Serial output removed - was blocking loop
+    instance->messageCallback(String(topicBuf), String(msgBuf));
   }
 }

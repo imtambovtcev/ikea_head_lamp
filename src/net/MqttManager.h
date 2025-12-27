@@ -54,6 +54,24 @@ public:
   void publishConfig(const DeviceConfig& config);
 
   /**
+   * Publish system diagnostics (uptime, heap, reset reason).
+   * 
+   * @param uptime Uptime in seconds
+   * @param freeHeap Free heap in bytes
+   * @param minHeap Minimum heap seen
+   * @param resetReason Reset reason string
+   * @param loopCount Loop iteration count
+   */
+  void publishDiagnostics(unsigned long uptime, uint32_t freeHeap, 
+                         uint32_t minHeap, const String& resetReason,
+                         unsigned long loopCount);
+
+  /**
+   * Publish heartbeat (simple alive signal).
+   */
+  void publishHeartbeat();
+
+  /**
    * Check if MQTT is currently connected.
    */
   bool connected();
@@ -90,6 +108,8 @@ private:
   static const char* TOPIC_CFG_REQUEST;
   static const char* TOPIC_STATE_JSON;
   static const char* TOPIC_CFG_STATE;
+  static const char* TOPIC_DIAGNOSTICS;   // System health info
+  static const char* TOPIC_HEARTBEAT;     // Alive signal
 
   bool connectMqtt();
   void subscribeToTopics();

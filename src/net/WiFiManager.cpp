@@ -17,6 +17,7 @@ void WiFiManager::loop() {
 
   if (!isConnected && wasConnected) {
     Serial.println("[WIFI] Connection lost");
+    if (statusLED) statusLED->wifiFailed();
     wasConnected = false;
   }
 
@@ -24,9 +25,13 @@ void WiFiManager::loop() {
     unsigned long now = millis();
     if (now - lastReconnectAttempt > RECONNECT_INTERVAL_MS) {
       lastReconnectAttempt = now;
-      connect();
+      if (statusLED) statusLED->wifiConnecting();
+      // Serial output removed - was blocking loop
+      WiFi.reconnect();  // Non-blocking
     }
   } else if (!wasConnected) {
+    Serial.printf("[WIFI] Connected. IP=%s\n", WiFi.localIP().toString().c_str());
+    if (statusLED) statusLED->wifiConnected();
     wasConnected = true;
   }
 }
@@ -41,25 +46,14 @@ void WiFiManager::setStatusLED(StatusLED* led) {
 
 void WiFiManager::connect() {
   Serial.printf("[WIFI] Connecting to %s\n", WIFI_SSID);
+  
+  // Configure WiFi for stability over performance
+  WiFi.setSleep(false);  // Disable sleep to prevent connection drops
+  WiFi.setAutoReconnect(true);
+  
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  uint8_t dots = 0;
-  while (WiFi.status() != WL_CONNECTED) {
-    if (statusLED) statusLED->wifiConnecting();
-    delay(500);
-    Serial.print(".");
-    if (++dots % 20 == 0) Serial.println();
-    
-    // Timeout after 30 seconds
-    if (dots > 60) {
-      Serial.println("\n[WIFI] Connection timeout");
-      if (statusLED) statusLED->wifiFailed();
-      return;
-    }
-  }
-
-  Serial.println();
-  Serial.printf("[WIFI] Connected. IP=%s\n", WiFi.localIP().toString().c_str());
-  if (statusLED) statusLED->wifiConnected();
-  wasConnected = true;
+  // Non-blocking connection - check in loop()
+  // Just initiate, don't wait here
+  Serial.println("[WIFI] Connection initiated (non-blocking)");
 }

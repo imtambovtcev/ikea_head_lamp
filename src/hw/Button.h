@@ -12,7 +12,8 @@
  */
 enum class ButtonEvent {
   None,
-  Press
+  Press,
+  LongPress
 };
 
 class Button {
@@ -39,6 +40,8 @@ private:
   bool lastStable;
   bool lastRaw;
   unsigned long lastChange;
+  unsigned long pressStartTime;
+  bool longPressReported;
 };
 
 #endif // BUTTON_H
